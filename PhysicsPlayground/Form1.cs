@@ -4,11 +4,57 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Windows.Forms;
 
 namespace PhysicsPlayground
 {
+    public class MovementEquationConstants
+    {
+        public float Ax0 { get; set; }
+        public float Ay0 { get; set; }
+        public float Vx0 { get; set; }
+        public float Vy0 { get; set; }
+        public double X0 { get; set; }
+        public double Y0 { get; set; }
+    }
+
+    public class MassObject
+    {
+        public Guid Guid { get; internal set; }
+        public float Mass { get; set; }
+        public IList<Force> Forces { get; set; }
+        public MovementEquationConstants InitValues { get; set; }
+
+        public MassObject(int mass, IList<Force> forces, MovementEquationConstants initValues)
+        {
+            Guid = Guid.NewGuid();
+
+            Mass = mass;
+            Forces = forces;
+            InitValues = initValues;
+        }
+
+        public (double x, double y) GetLocationInTime(double t)
+        {
+            var aVector = Forces
+                .Select(force => Vector2.Divide(force.Vector, Mass))
+                .Aggregate((force1Vector, force2Vector) => Vector2.Add(force1Vector, force2Vector));
+            (float ax, float ay) = (aVector.X, aVector.Y);
+
+            double x = InitValues.X0 + 0.5 * (InitValues.Ax0 + aVector.X) * Math.Pow(t, 2) + InitValues.Vx0 * t;
+            double y = InitValues.Y0 + 0.5 * (InitValues.Ay0 + aVector.Y) * Math.Pow(t, 2) + InitValues.Vy0 * t;
+
+            return (x, y);
+        }
+    }
+
+    public class Force
+    {
+        public Vector2 Vector { get; set; }
+    }
+
     public enum RunState
     {
         None = 0,
@@ -29,14 +75,18 @@ namespace PhysicsPlayground
         float _yMeters = 100;
         float _pixelsPerMeter;
         int _metersInScale = 5;
-        Point _location;
-        MovementEquation _movementEquation;
+
+        IList<MassObject> _massObjects;
+        IDictionary<Guid,Point> _grid;
+
         int _tick = 10;
         float _factor;
 
         TimeSpan _baseTime = TimeSpan.Zero;
         DateTime _startTime;
-        public TimeSpan RunTime { get => _playState switch
+        public TimeSpan RunTime
+        {
+            get => _playState switch
             {
                 RunState.Running => _baseTime + DateTime.Now.Subtract(_startTime),
                 RunState.Paused => _baseTime,
@@ -63,8 +113,8 @@ namespace PhysicsPlayground
             }
             else
                 throw new Exception("Choose meters in x or y axis");
-            
-            _factor = (float)(_tick / TimeSpan.FromSeconds(1).TotalMilliseconds)*_pixelsPerMeter;
+
+            _factor = (float)(_tick / TimeSpan.FromSeconds(1).TotalMilliseconds) * _pixelsPerMeter;
 
             _clock = new Timer();
             _clock.Interval = _tick;
@@ -72,10 +122,18 @@ namespace PhysicsPlayground
 
             _scalePen = new Pen(Color.Blue, 10);
 
-            _movementEquation = new MovementEquation() { X0 = 0, Y0 = 2 * _yMeters / 3, Ax0 = 0, Ay0 = 9.8f, Vx0 = 10, Vy0 = -10 };
+            _massObjects = new List<MassObject>
+            {
+                new MassObject(
+                    10, 
+                    new List<Force> { new Force {Vector = new Vector2(0, 98)} }, 
+                    new MovementEquationConstants { X0 = 0, Y0 = 2 * _yMeters / 3, Ax0 = 0, Ay0 = 0, Vx0 = 10, Vy0 = -10})
+            };
+
+            _grid = new Dictionary<Guid, Point>();
 
             _playState = RunState.Stopped;
-            UpdateObjects();
+            UpdateObjectsOnGrid();
         }
 
         private void StartButton_Click(object sender, EventArgs e)
@@ -123,25 +181,26 @@ namespace PhysicsPlayground
             _playState = RunState.Stopped;
             _clock.Stop();
             _baseTime = TimeSpan.Zero;
-            UpdateObjects();
+            UpdateObjectsOnGrid();
             UpdateGraphics();
         }
 
         private void OnClock()
         {
-            UpdateObjects();
+            UpdateObjectsOnGrid();
 
             UpdateGraphics();
         }
 
-        private void UpdateObjects()
+        private void UpdateObjectsOnGrid()
         {
             double t = RunTime.TotalSeconds;
 
-            (double x, double y) = _movementEquation.GetLocationInTime(t);
-
-            _location.X = (int)(x * _pixelsPerMeter);
-            _location.Y = (int)(y * _pixelsPerMeter);
+            foreach (var massObj in _massObjects)
+            {
+                (double x, double y) = massObj.GetLocationInTime(t);
+                _grid[massObj.Guid] = new Point((int)(x * _pixelsPerMeter), (int)(y * _pixelsPerMeter));
+            }
         }
 
         private void UpdateGraphics()
@@ -156,7 +215,7 @@ namespace PhysicsPlayground
 
             DrawScale(e);
 
-            DrawBall(e);
+            DrawObjectsGrid(e);
         }
 
         private void DrawScale(PaintEventArgs e)
@@ -166,17 +225,20 @@ namespace PhysicsPlayground
                 0, _pixelsPerMeter * _metersInScale);
         }
 
-        private void DrawBall(PaintEventArgs e)
+        private void DrawObjectsGrid(PaintEventArgs e)
         {
-            Point p = new Point(_location.X, _location.Y);
-            p.Offset(-10, -10);
+            foreach (var point in _grid.Values)
+            {
+                Point p = new Point(point.X, point.Y);
+                p.Offset(-10, -10);
 
-            e.Graphics.FillEllipse(Brushes.Red,
-                new Rectangle(
-                    p,
-                    new Size(20, 20)
-                    )
-                );
+                e.Graphics.FillEllipse(Brushes.Red,
+                    new Rectangle(
+                        p,
+                        new Size(20, 20)
+                        )
+                    );
+            }
         }
 
     }
