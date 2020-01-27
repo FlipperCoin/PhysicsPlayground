@@ -1,6 +1,6 @@
 ﻿namespace PhysicsPlayground
 {
-    partial class Form1
+    partial class SimulationWindow
     {
         /// <summary>
         /// Required designer variable.

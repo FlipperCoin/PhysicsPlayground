@@ -5,6 +5,12 @@ VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground", "PhysicsPlayground\PhysicsPlayground.csproj", "{E9536E2C-63CD-4F63-B129-E51B857FB084}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.ConsoleTests", "PhysicsPlayground.ConsoleTests\PhysicsPlayground.ConsoleTests.csproj", "{E6F40734-CF24-4355-A905-AD548E42CCDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.Forces", "PhysicsPlayground.Forces\PhysicsPlayground.Forces.csproj", "{34109683-87C0-4DEE-91DC-FA5C9F4A5B30}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.Engine", "PhysicsPlayground.Engine\PhysicsPlayground.Engine.csproj", "{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,18 @@ Global
 		{E9536E2C-63CD-4F63-B129-E51B857FB084}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9536E2C-63CD-4F63-B129-E51B857FB084}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9536E2C-63CD-4F63-B129-E51B857FB084}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34109683-87C0-4DEE-91DC-FA5C9F4A5B30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34109683-87C0-4DEE-91DC-FA5C9F4A5B30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34109683-87C0-4DEE-91DC-FA5C9F4A5B30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34109683-87C0-4DEE-91DC-FA5C9F4A5B30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
