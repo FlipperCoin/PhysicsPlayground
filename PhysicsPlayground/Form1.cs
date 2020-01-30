@@ -1,5 +1,4 @@
 ﻿using PhysicsPlayground.Engine;
-using PhysicsPlayground.Forces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,6 +8,8 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Windows.Forms;
+using PhysicsLibrary.Engine.Momentum;
+using PhysicsPlayground.Engine.ConstantForces;
 
 namespace PhysicsPlayground
 {
@@ -78,7 +79,11 @@ namespace PhysicsPlayground
 
             _grid = new List<Point>();
 
-            _engine = new ForcesEngineFactory().GetEngine(new GridParams { X = _xMeters, Y = _yMeters });
+            //_engine = new ForcesEngineFactory(new GridParams() {X = _xMeters, Y = _yMeters})
+            //    .GetEngine();
+
+            _engine = new ConservationOfMomentumEngineFactory(new GridParams() {X = _xMeters, Y = _yMeters})
+                .GetEngine();
 
             _playState = RunState.Stopped;
             UpdateObjectsOnGrid();

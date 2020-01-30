@@ -6,6 +6,6 @@ namespace PhysicsPlayground.Engine
 {
     public interface IEngineFactory
     {
-        IEngine GetEngine(GridParams grid);
+        IEngine GetEngine();
     }
 }

@@ -7,9 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground", "Physic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.ConsoleTests", "PhysicsPlayground.ConsoleTests\PhysicsPlayground.ConsoleTests.csproj", "{E6F40734-CF24-4355-A905-AD548E42CCDC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.Forces", "PhysicsPlayground.Forces\PhysicsPlayground.Forces.csproj", "{34109683-87C0-4DEE-91DC-FA5C9F4A5B30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Engine", "PhysicsPlayground.Engine\PhysicsPlayground.Engine.csproj", "{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.Engine", "PhysicsPlayground.Engine\PhysicsPlayground.Engine.csproj", "{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsLibrary.Engine.Momentum", "PhysicsLibrary.Engine.Momentum\PhysicsLibrary.Engine.Momentum.csproj", "{F78241A2-9675-401F-A665-3FAD7119D0BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Engine.ConstantForces", "PhysicsPlayground.Engine.ConstantForces\PhysicsPlayground.Engine.ConstantForces.csproj", "{6B26DDC0-C1F8-4E83-B877-F3E872FF17F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +27,18 @@ Global
 		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{34109683-87C0-4DEE-91DC-FA5C9F4A5B30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{34109683-87C0-4DEE-91DC-FA5C9F4A5B30}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{34109683-87C0-4DEE-91DC-FA5C9F4A5B30}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{34109683-87C0-4DEE-91DC-FA5C9F4A5B30}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F78241A2-9675-401F-A665-3FAD7119D0BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F78241A2-9675-401F-A665-3FAD7119D0BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F78241A2-9675-401F-A665-3FAD7119D0BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F78241A2-9675-401F-A665-3FAD7119D0BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B26DDC0-C1F8-4E83-B877-F3E872FF17F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B26DDC0-C1F8-4E83-B877-F3E872FF17F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B26DDC0-C1F8-4E83-B877-F3E872FF17F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B26DDC0-C1F8-4E83-B877-F3E872FF17F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

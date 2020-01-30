@@ -90,13 +90,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PhysicsLibrary.Engine.Momentum\PhysicsLibrary.Engine.Momentum.csproj">
+      <Project>{F78241A2-9675-401F-A665-3FAD7119D0BE}</Project>
+      <Name>PhysicsLibrary.Engine.Momentum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PhysicsPlayground.Engine.ConstantForces\PhysicsPlayground.Engine.ConstantForces.csproj">
+      <Project>{6B26DDC0-C1F8-4E83-B877-F3E872FF17F3}</Project>
+      <Name>PhysicsPlayground.Engine.ConstantForces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PhysicsPlayground.Engine\PhysicsPlayground.Engine.csproj">
       <Project>{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}</Project>
       <Name>PhysicsPlayground.Engine</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PhysicsPlayground.Forces\PhysicsPlayground.Forces.csproj">
-      <Project>{34109683-87c0-4dee-91dc-fa5c9f4a5b30}</Project>
-      <Name>PhysicsPlayground.Forces</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
