@@ -9,7 +9,7 @@ namespace PhysicsLibrary.Engine.Momentum
     public class ConservationOfMomentumEngine : IEngine
     {
         private readonly GridParams _grid;
-        private IEnumerable<(MassObject, MovementParameters)> _objectsAndMovementParameters;
+        private IEnumerable<(MassObject, MovementEquation)> _objectsAndMovementParameters;
 
         public ConservationOfMomentumEngine(GridParams grid, IEnumerable<(MassObject, InitialMovementParameters)> objectsAndTheirInitialMovementParameters)
         {
@@ -18,12 +18,12 @@ namespace PhysicsLibrary.Engine.Momentum
                 .Select(objAndInitMovementParams =>
                 {
                     var (obj, initMovementParams) = objAndInitMovementParams;
-                    return (obj, new MovementParameters()
+                    return (obj, new MovementEquation()
                     {
-                        Vx = initMovementParams.Vx0,
-                        Vy = initMovementParams.Vy0,
-                        X = initMovementParams.X0,
-                        Y = initMovementParams.Y0
+                        Vx0 = initMovementParams.Vx0,
+                        Vy0 = initMovementParams.Vy0,
+                        X0 = initMovementParams.X0,
+                        Y0 = initMovementParams.Y0
                     });
                 }).ToList();
         }
@@ -32,24 +32,27 @@ namespace PhysicsLibrary.Engine.Momentum
             var coordinates = new List<(double, double)>();
             var updatedMovementParams = _objectsAndMovementParameters.Select((objAndMovementParams) =>
             {
-                var (obj, movementParams) = objAndMovementParams;
-                var (x, y) = GetLocationInTime(t, movementParams);
-                // I wanted to update x, y, vx, vy but realized t should be changed too
-                // Different approach is needed, managing real movement functions with t in an offset might be hard,
-                // need to check
+                var (obj, movementEquation) = objAndMovementParams;
+                var (x, y) = movementEquation.GetLocationInTime(t);
+
+                if (x <= 0 || x >= _grid.X)
+                {
+                    movementEquation.Tx0 = t;
+                    movementEquation.X0 = x;
+                    movementEquation.Vx0 = -movementEquation.Vx0;
+                }
+                if (y <= 0 || y >= _grid.Y)
+                {
+                    movementEquation.Ty0 = t;
+                    movementEquation.Y0 = y;
+                    movementEquation.Vy0 = -movementEquation.Vy0;
+                }
+
                 coordinates.Add((x, y));
-                return (obj, movementParams);
+                return (obj, movementEquation);
             }).ToList();
             _objectsAndMovementParameters = updatedMovementParams;
             return coordinates;
-        }
-
-        private (double x, double y) GetLocationInTime(double t, MovementParameters movementParams)
-        {
-            double x = movementParams.X + movementParams.Vx * t;
-            double y = movementParams.Y + movementParams.Vy * t;
-
-            return (x, y);
         }
     }
 }
