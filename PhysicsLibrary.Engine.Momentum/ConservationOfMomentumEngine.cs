@@ -11,41 +11,45 @@ namespace PhysicsLibrary.Engine.Momentum
         private readonly GridParams _grid;
         private IEnumerable<(MassObject, MovementEquation)> _objectsAndMovementParameters;
 
-        public ConservationOfMomentumEngine(GridParams grid, IEnumerable<(MassObject, InitialMovementParameters)> objectsAndTheirInitialMovementParameters)
+        public ConservationOfMomentumEngine(GridParams grid, IEnumerable<(MassObject, MovementParameters2)> objectsAndTheirInitialMovementParameters)
         {
             _grid = grid;
             _objectsAndMovementParameters = objectsAndTheirInitialMovementParameters
-                .Select(objAndInitMovementParams =>
+                .Select(objAndMovementParams =>
                 {
-                    var (obj, initMovementParams) = objAndInitMovementParams;
-                    return (obj, new MovementEquation()
-                    {
-                        Vx0 = initMovementParams.Vx0,
-                        Vy0 = initMovementParams.Vy0,
-                        X0 = initMovementParams.X0,
-                        Y0 = initMovementParams.Y0
-                    });
+                    var (obj, movementParams2) = objAndMovementParams;
+                    return (obj, new MovementEquation(movementParams2.X, movementParams2.Y));
                 }).ToList();
         }
         public IEnumerable<(double, double)> GetCoordinates(double t)
         {
             var coordinates = new List<(double, double)>();
-            var updatedMovementParams = _objectsAndMovementParameters.Select((objAndMovementParams) =>
+            var updatedMovementParams = _objectsAndMovementParameters.Select((objAndMovementEquation) =>
             {
-                var (obj, movementEquation) = objAndMovementParams;
+                var (obj, movementEquation) = objAndMovementEquation;
                 var (x, y) = movementEquation.GetLocationInTime(t);
-
+                var (vx, vy) = movementEquation.GetSpeedInTime(t);
                 if (x <= 0 || x >= _grid.X)
                 {
-                    movementEquation.Tx0 = t;
-                    movementEquation.X0 = x;
-                    movementEquation.Vx0 = -movementEquation.Vx0;
+                    movementEquation.UpdateXEquations(
+                        new Interval()
+                        {
+                            Minimum = new IntervalEndpoint() { Type = EndpointType.Closed, Value = t },
+                            Maximum = IntervalEndpoint.Unbounded
+                        }, 
+                        new InitialMovementParameters { D0 = x, V0 = -vx, T0=t}
+                    );
                 }
                 if (y <= 0 || y >= _grid.Y)
                 {
-                    movementEquation.Ty0 = t;
-                    movementEquation.Y0 = y;
-                    movementEquation.Vy0 = -movementEquation.Vy0;
+                    movementEquation.UpdateYEquations(
+                        new Interval()
+                        {
+                            Minimum = new IntervalEndpoint() { Type = EndpointType.Closed, Value = t },
+                            Maximum = IntervalEndpoint.Unbounded
+                        },
+                        new InitialMovementParameters { D0 = y, V0 = -vy, T0 = t }
+                    );
                 }
 
                 coordinates.Add((x, y));

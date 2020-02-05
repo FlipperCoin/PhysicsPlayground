@@ -18,9 +18,21 @@ namespace PhysicsLibrary.Engine.Momentum
         {
             return new ConservationOfMomentumEngine(
                 _grid,
-                new List<(MassObject, InitialMovementParameters)>()
+                new List<(MassObject, MovementParameters2)>()
                 {
-                    (new MassObject(10), new InitialMovementParameters() {Vx0 = 10, Vy0 = 10, X0 = 10, Y0 = 10})
+                    (new MassObject(10), new MovementParameters2()
+                    {
+                        X= new InitialMovementParameters()
+                        {
+                            V0 = 10,
+                            D0 = 10
+                        },
+                        Y= new InitialMovementParameters()
+                        {
+                            V0 = 10,
+                            D0 = 10
+                        }
+                    })
                 });
         }
     }
