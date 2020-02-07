@@ -39,6 +39,11 @@ namespace PhysicsLibrary.Engine.Momentum
             var (x, y) = GetEquationsInTime(t);
             return (x.Derivative().Evaluate(t), y.Derivative().Evaluate(t));
         }
+        public (double ax, double ay) GetAccelerationInTime(double t)
+        {
+            var (x, y) = GetEquationsInTime(t);
+            return (x.Derivative().Derivative().Evaluate(t), y.Derivative().Derivative().Evaluate(t));
+        }
 
         private (Polynomial x, Polynomial y) GetEquationsInTime(double t)
         {
@@ -107,7 +112,7 @@ namespace PhysicsLibrary.Engine.Momentum
             newCoefficients[0] = arbitraryConstant;
             for (var i = 1; i < newCoefficients.Length; i++)
             {
-                newCoefficients[i] = Coefficients[i - 1] * (1 / i);
+                newCoefficients[i] = Coefficients[i - 1] * (1.0 / i);
             }
 
             return new Polynomial(newCoefficients);
@@ -154,6 +159,8 @@ namespace PhysicsLibrary.Engine.Momentum
 
         public Polynomial Derivative()
         {
+            if (Coefficients.Length == 0) return new Polynomial();
+
             var newCo = new double[Coefficients.Length - 1];
             for (var i = 1; i < Coefficients.Length; i++)
             {

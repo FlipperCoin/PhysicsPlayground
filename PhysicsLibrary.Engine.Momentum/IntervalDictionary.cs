@@ -62,6 +62,7 @@ namespace PhysicsLibrary.Engine.Momentum
                     (EndpointType.Open, EndpointType.Closed) => curMin <= minimum,
                     (EndpointType.Open, EndpointType.Open) => curMin <= minimum,
                     (_, EndpointType.Unbounded) => true,
+                    (EndpointType.Unbounded, _) => false,
                     _ => throw new Exception()
                 };
 
@@ -84,6 +85,7 @@ namespace PhysicsLibrary.Engine.Momentum
                         (EndpointType.Open, EndpointType.Closed) => maximum <= curMax,
                         (EndpointType.Open, EndpointType.Open) => maximum <= curMax,
                         (_, EndpointType.Unbounded) => true,
+                        (EndpointType.Unbounded, _) => false,
                         _ => throw new Exception()
                     };
 

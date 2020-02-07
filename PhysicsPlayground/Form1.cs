@@ -30,7 +30,7 @@ namespace PhysicsPlayground
 
         Timer _clock;
         double _xMeters;
-        double _yMeters = 50;
+        double _yMeters = 20;
         double _pixelsPerMeter;
         double _metersInScale = 5;
 

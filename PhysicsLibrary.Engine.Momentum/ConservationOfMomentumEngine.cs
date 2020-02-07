@@ -21,6 +21,7 @@ namespace PhysicsLibrary.Engine.Momentum
                     return (obj, new MovementEquation(movementParams2.X, movementParams2.Y));
                 }).ToList();
         }
+
         public IEnumerable<(double, double)> GetCoordinates(double t)
         {
             var coordinates = new List<(double, double)>();
@@ -29,7 +30,8 @@ namespace PhysicsLibrary.Engine.Momentum
                 var (obj, movementEquation) = objAndMovementEquation;
                 var (x, y) = movementEquation.GetLocationInTime(t);
                 var (vx, vy) = movementEquation.GetSpeedInTime(t);
-                if (x <= 0 || x >= _grid.X)
+                var (ax, ay) = movementEquation.GetAccelerationInTime(t);
+                if ((x <= 0 && vx < 0) || (x >= _grid.X && vx > 0))
                 {
                     movementEquation.UpdateXEquations(
                         new Interval()
@@ -37,10 +39,10 @@ namespace PhysicsLibrary.Engine.Momentum
                             Minimum = new IntervalEndpoint() { Type = EndpointType.Closed, Value = t },
                             Maximum = IntervalEndpoint.Unbounded
                         }, 
-                        new InitialMovementParameters { D0 = x, V0 = -vx, T0=t}
+                        new InitialMovementParameters { D0 = x, V0 = -vx, A0 = ax, T0=t}
                     );
                 }
-                if (y <= 0 || y >= _grid.Y)
+                if ((y <= 0 && vy < 0) || (y >= _grid.Y && vy > 0))
                 {
                     movementEquation.UpdateYEquations(
                         new Interval()
@@ -48,7 +50,7 @@ namespace PhysicsLibrary.Engine.Momentum
                             Minimum = new IntervalEndpoint() { Type = EndpointType.Closed, Value = t },
                             Maximum = IntervalEndpoint.Unbounded
                         },
-                        new InitialMovementParameters { D0 = y, V0 = -vy, T0 = t }
+                        new InitialMovementParameters { D0 = y, V0 = -vy, A0 = ay, T0 = t }
                     );
                 }
 

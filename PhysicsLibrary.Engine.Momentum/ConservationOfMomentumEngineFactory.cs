@@ -24,12 +24,13 @@ namespace PhysicsLibrary.Engine.Momentum
                     {
                         X= new InitialMovementParameters()
                         {
-                            V0 = 10,
+                            V0 = 20,
                             D0 = 10
                         },
                         Y= new InitialMovementParameters()
                         {
-                            V0 = 10,
+                            A0 = 9.8,
+                            V0 = 20,
                             D0 = 10
                         }
                     })
