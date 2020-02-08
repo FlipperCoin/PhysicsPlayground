@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using MathNet.Numerics;
 
 namespace PhysicsPlayground.Math
 {
@@ -74,6 +75,9 @@ namespace PhysicsPlayground.Math
 
             return new Polynomial(newCo);
         }
+
+        public double[] Roots(double line = 0) => FindRoots.Polynomial((this - line).Coefficients).Where(c => c.IsReal()).Select(c => c.Real)
+            .ToArray();
 
         public override string ToString()
         {

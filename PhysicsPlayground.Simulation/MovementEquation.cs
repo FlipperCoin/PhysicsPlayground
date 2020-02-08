@@ -23,6 +23,11 @@ namespace PhysicsPlayground.Simulation
             }, y);
         }
 
+        public MovementEquation()
+        {
+            
+        }
+
         public (double x, double y) GetLocationInTime(double t)
         {
             var (x, y) = GetEquationsInTime(t);
@@ -72,7 +77,7 @@ namespace PhysicsPlayground.Simulation
                 pol);
         }
 
-        private Polynomial GetPolynomialMovementEquation(InitialMovementParameters movementParameters)
+        public static Polynomial GetPolynomialMovementEquation(InitialMovementParameters movementParameters)
         {
             return GetPolynomialMovementEquation(movementParameters.A0, 
                 movementParameters.V0, 
@@ -80,7 +85,7 @@ namespace PhysicsPlayground.Simulation
                 movementParameters.T0);
         }
 
-        private Polynomial GetPolynomialMovementEquation(double a0, double v0, double d0, double t0)
+        public static Polynomial GetPolynomialMovementEquation(double a0, double v0, double d0, double t0)
         {
             var a = new Polynomial(a0);
             var d =

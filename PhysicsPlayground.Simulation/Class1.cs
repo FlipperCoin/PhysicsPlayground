@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MathNet.Numerics;
 
 namespace PhysicsPlayground.Simulation
 {
@@ -63,7 +64,16 @@ namespace PhysicsPlayground.Simulation
             IEnumerable<MovementEquation> movementEquations = _objectsAndMovementParameters
                 .Select(obj =>
                 {
-                    var (massObject, movementParams) = obj; 
+                    var (massObject, (x, y)) = obj;
+
+                    var axisParams = x;
+                    var (axisMin, axisMax) = (0, _grid.X);
+
+                    var t = t1;
+                    var pol = MovementEquation.GetPolynomialMovementEquation(axisParams);
+                    var rootsWithMin = pol.Roots(axisMin).Where(root => root > t && root <= t2);
+                    var rootsWithMax = pol.Roots(axisMax).Where(root => root > t && root <= t2);
+                    
 
                 });
 
