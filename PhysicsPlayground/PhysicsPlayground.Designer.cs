@@ -61,7 +61,7 @@
             this.timerLabel.Size = new System.Drawing.Size(0, 13);
             this.timerLabel.TabIndex = 2;
             // 
-            // Form1
+            // SimulationWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -69,8 +69,8 @@
             this.Controls.Add(this.timerLabel);
             this.Controls.Add(this.stopButton);
             this.Controls.Add(this.startButton);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "SimulationWindow";
+            this.Text = "PhysicsPlayground";
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsLibrary.Engine.Momen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Engine.ConstantForces", "PhysicsPlayground.Engine.ConstantForces\PhysicsPlayground.Engine.ConstantForces.csproj", "{6B26DDC0-C1F8-4E83-B877-F3E872FF17F3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Simulation", "PhysicsPlayground.Simulation\PhysicsPlayground.Simulation.csproj", "{54F8161B-B38C-4817-A5C1-349781A73B15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.Math", "PhysicsPlayground.Math\PhysicsPlayground.Math.csproj", "{45428B8D-19CF-4880-80A6-002D3FA199D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{6B26DDC0-C1F8-4E83-B877-F3E872FF17F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B26DDC0-C1F8-4E83-B877-F3E872FF17F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B26DDC0-C1F8-4E83-B877-F3E872FF17F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54F8161B-B38C-4817-A5C1-349781A73B15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54F8161B-B38C-4817-A5C1-349781A73B15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54F8161B-B38C-4817-A5C1-349781A73B15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54F8161B-B38C-4817-A5C1-349781A73B15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45428B8D-19CF-4880-80A6-002D3FA199D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45428B8D-19CF-4880-80A6-002D3FA199D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45428B8D-19CF-4880-80A6-002D3FA199D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45428B8D-19CF-4880-80A6-002D3FA199D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
