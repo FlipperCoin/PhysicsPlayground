@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MathNet.Numerics;
+using Polynomial = PhysicsPlayground.Math.Polynomial;
 
 namespace PhysicsPlayground.Simulation
 {
@@ -68,16 +69,46 @@ namespace PhysicsPlayground.Simulation
 
                     var axisParams = x;
                     var (axisMin, axisMax) = (0, _grid.X);
-
-                    var t = t1;
-                    var pol = MovementEquation.GetPolynomialMovementEquation(axisParams);
-                    var rootsWithMin = pol.Roots(axisMin).Where(root => root > t && root <= t2);
-                    var rootsWithMax = pol.Roots(axisMax).Where(root => root > t && root <= t2);
                     
+                    var xEquations = BuildAxisEquations(t1, t2, x, 0, _grid.X);
+                    var yEquations = BuildAxisEquations(t1, t2, y, 0, _grid.Y);
 
+                    return new MovementEquation(xEquations, yEquations);
                 });
 
             return new Simulation(movementEquations);
+        }
+
+        private static IntervalIndexer<Polynomial> BuildAxisEquations(double t1, double t2, InitialMovementParameters axisParams,
+            int axisMin, double axisMax)
+        {
+            var pol = MovementEquation.GetPolynomialMovementEquation(axisParams);
+            var axisEquations = new IntervalIndexer<Polynomial>();
+            axisEquations.AddInterval((Endpoints.Unbounded, Endpoints.Unbounded), pol);
+
+            var t = t1;
+            while (t < t2)
+            {
+                // Using root > t instead of >= means that putting the object on the edge from the start
+                // means that it will go the direction it was set to
+                var rootsWithMin = pol.Roots(axisMin).Where(root => root > t && root <= t2);
+                var rootsWithMax = pol.Roots(axisMax).Where(root => root > t && root <= t2);
+
+                var roots = rootsWithMin.Concat(rootsWithMax);
+                if (!roots.Any())
+                {
+                    break;
+                }
+
+                var minRoot = roots.Min();
+
+                axisParams = new InitialMovementParameters(axisParams) {V0 = -axisParams.V0};
+                pol = MovementEquation.GetPolynomialMovementEquation(axisParams);
+                axisEquations.AddInterval((Endpoints.Closed(minRoot), Endpoints.Unbounded), pol);
+                t = minRoot;
+            }
+
+            return axisEquations;
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MathNet.Numerics.Integration;
 using static System.Double;
 
 namespace PhysicsPlayground.Simulation
@@ -15,9 +16,11 @@ namespace PhysicsPlayground.Simulation
     public static class Endpoints
     {
         public static (double, EndpointType) Unbounded => (NaN, EndpointType.Unbounded);
+        public static (double, EndpointType) Open(double val) => (val, EndpointType.Open);
+        public static (double, EndpointType) Closed(double val) => (val, EndpointType.Closed);
     }
 
-    class IntervalIndexer<T>
+    public class IntervalIndexer<T>
     {
         private List<(((double, EndpointType), (double, EndpointType)), Optional<T>)> _intervals;
 

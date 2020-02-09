@@ -23,6 +23,12 @@ namespace PhysicsPlayground.Simulation
             }, y);
         }
 
+        public MovementEquation(IntervalIndexer<Polynomial> xEquations, IntervalIndexer<Polynomial> yEquations)
+        {
+            _xEquations = xEquations;
+            _yEquations = yEquations;
+        }
+
         public MovementEquation()
         {
             
