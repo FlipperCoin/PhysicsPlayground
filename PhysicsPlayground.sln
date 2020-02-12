@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground", "PhysicsPlayground\PhysicsPlayground.csproj", "{E9536E2C-63CD-4F63-B129-E51B857FB084}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.ConsoleTests", "PhysicsPlayground.ConsoleTests\PhysicsPlayground.ConsoleTests.csproj", "{E6F40734-CF24-4355-A905-AD548E42CCDC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Engine", "PhysicsPlayground.Engine\PhysicsPlayground.Engine.csproj", "{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}"
@@ -15,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Engine.Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Simulation", "PhysicsPlayground.Simulation\PhysicsPlayground.Simulation.csproj", "{54F8161B-B38C-4817-A5C1-349781A73B15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.Math", "PhysicsPlayground.Math\PhysicsPlayground.Math.csproj", "{45428B8D-19CF-4880-80A6-002D3FA199D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Math", "PhysicsPlayground.Math\PhysicsPlayground.Math.csproj", "{45428B8D-19CF-4880-80A6-002D3FA199D4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Display", "PhysicsPlayground.Display\PhysicsPlayground.Display.csproj", "{E7126450-9F32-4CA3-9AE1-E5A3B6EE696B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E9536E2C-63CD-4F63-B129-E51B857FB084}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E9536E2C-63CD-4F63-B129-E51B857FB084}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E9536E2C-63CD-4F63-B129-E51B857FB084}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E9536E2C-63CD-4F63-B129-E51B857FB084}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,6 +47,10 @@ Global
 		{45428B8D-19CF-4880-80A6-002D3FA199D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45428B8D-19CF-4880-80A6-002D3FA199D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45428B8D-19CF-4880-80A6-002D3FA199D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7126450-9F32-4CA3-9AE1-E5A3B6EE696B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7126450-9F32-4CA3-9AE1-E5A3B6EE696B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7126450-9F32-4CA3-9AE1-E5A3B6EE696B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7126450-9F32-4CA3-9AE1-E5A3B6EE696B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

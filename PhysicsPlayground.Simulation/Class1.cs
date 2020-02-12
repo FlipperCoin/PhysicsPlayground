@@ -102,9 +102,12 @@ namespace PhysicsPlayground.Simulation
 
                 var minRoot = roots.Min();
 
-                axisParams = new InitialMovementParameters(axisParams) {V0 = -axisParams.V0};
+                axisParams = new InitialMovementParameters()
+                {
+                    D0 = pol.Evaluate(minRoot), V0 = -pol.Derivative().Evaluate(minRoot), A0 = pol.Derivative().Derivative().Evaluate(minRoot), T0 = minRoot
+                };
                 pol = MovementEquation.GetPolynomialMovementEquation(axisParams);
-                axisEquations.AddInterval((Endpoints.Closed(minRoot), Endpoints.Unbounded), pol);
+                axisEquations.AddInterval((Endpoints.Closed(minRoot), Endpoints.Open(t2)), pol);
                 t = minRoot;
             }
 
@@ -138,7 +141,7 @@ namespace PhysicsPlayground.Simulation
 
         public IEnumerable<(double x, double y)> GetCoordinates()
         {
-            return _simulation.GetCoordinates(_timeProvider.Time.Seconds);
+            return _simulation.GetCoordinates(_timeProvider.Time.TotalSeconds);
         }
     }
 
@@ -176,6 +179,11 @@ namespace PhysicsPlayground.Simulation
         private DateTime _startTime;
         public RunState RunState { get; private set; }
 
+        public RunTime()
+        {
+            RunState = RunState.Stopped;
+        }
+
         public TimeSpan Time
         {
             get => RunState switch
@@ -187,7 +195,7 @@ namespace PhysicsPlayground.Simulation
             };
         }
 
-        public RunTime(double t0)
+        public RunTime(double t0 = 0)
         {
             _t0 = TimeSpan.FromSeconds(t0);
             _baseTime = _t0;

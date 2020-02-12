@@ -38,7 +38,7 @@ namespace PhysicsPlayground.Math
         public static Polynomial operator +(Polynomial p1, double x)
         {
             if (x == 0) return p1.Clone();
-            var newCo = p1.Coefficients.Length > 0 ? p1.Coefficients : new double[1];
+            var newCo = p1.Coefficients.Length > 0 ? (double[])p1.Coefficients.Clone() : new double[1];
             newCo[0] += x;
 
             return new Polynomial(newCo);

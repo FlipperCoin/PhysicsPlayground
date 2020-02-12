@@ -1,0 +1,23 @@
+﻿<Window x:Class="PhysicsPlayground.Display.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PhysicsPlayground.Display"
+        mc:Ignorable="d"
+        Title="Physics Playground" Height="450" Width="800">
+    <Grid>
+        <DockPanel>
+            <Canvas Name="canvas" MinHeight="380" DockPanel.Dock="Top">
+                
+            </Canvas>
+            <Border BorderThickness="0 1 0 0" BorderBrush="Black">
+                <WrapPanel DockPanel.Dock="Bottom" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <Label Name="timerLabel" Margin ="0 0 10 0"></Label>
+                    <Button Name="startBtn" Click="StartButton_Click" Content="Start" Width="64" VerticalAlignment="Center" Margin="0 0 25 0"/>
+                    <Button Name="stopBtn" Click="StopButton_Click" Content="Stop" Width="64" VerticalAlignment="Center" Margin="0 0 15 0"></Button>
+                </WrapPanel>
+            </Border>
+        </DockPanel>
+    </Grid>
+</Window>
