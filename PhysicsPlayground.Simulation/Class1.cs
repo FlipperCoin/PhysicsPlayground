@@ -51,12 +51,12 @@ namespace PhysicsPlayground.Simulation
 
     public class ConservationOfMomentumSimulator : SyncSimulator
     {
-        private readonly GridParams _grid;
+        private readonly Box _box;
         private readonly IEnumerable<(MassObject, MovementParameters2)> _objectsAndMovementParameters;
 
-        public ConservationOfMomentumSimulator(GridParams grid, IEnumerable<(MassObject, MovementParameters2)> objectsAndMovementParameters)
+        public ConservationOfMomentumSimulator(Box box, IEnumerable<(MassObject, MovementParameters2)> objectsAndMovementParameters)
         {
-            _grid = grid;
+            _box = box;
             _objectsAndMovementParameters = objectsAndMovementParameters;
         }
 
@@ -67,11 +67,8 @@ namespace PhysicsPlayground.Simulation
                 {
                     var (massObject, (x, y)) = obj;
 
-                    var axisParams = x;
-                    var (axisMin, axisMax) = (0, _grid.X);
-                    
-                    var xEquations = BuildAxisEquations(t1, t2, x, 0, _grid.X);
-                    var yEquations = BuildAxisEquations(t1, t2, y, 0, _grid.Y);
+                    var xEquations = BuildAxisEquations(t1, t2, x, _box.X1, _box.X2);
+                    var yEquations = BuildAxisEquations(t1, t2, y, _box.Y1, _box.Y2);
 
                     return new MovementEquation(xEquations, yEquations);
                 }).ToList();
@@ -80,7 +77,7 @@ namespace PhysicsPlayground.Simulation
         }
 
         private static IntervalIndexer<Polynomial> BuildAxisEquations(double t1, double t2, InitialMovementParameters axisParams,
-            int axisMin, double axisMax)
+            double axisMin, double axisMax)
         {
             var pol = MovementEquation.GetPolynomialMovementEquation(axisParams);
             var axisEquations = new IntervalIndexer<Polynomial>();
@@ -113,6 +110,14 @@ namespace PhysicsPlayground.Simulation
 
             return axisEquations;
         }
+    }
+
+    public class Box
+    {
+        public double X1 { get; set; }
+        public double Y1 { get; set; }
+        public double X2 { get; set; }
+        public double Y2 { get; set; }
     }
 
     public class Simulation : ISimulation

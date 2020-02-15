@@ -25,15 +25,21 @@ namespace PhysicsPlayground.Display
         DispatcherTimer _clock;
         double _xMeters;
         double _yMeters = 20;
-        double _pixelsPerMeter;
-        double _metersInScale = 5;
+        double _pixelsPerMeterBase;
+        private double _y0OnCanvas;
+        private double _x0OnCanvas;
 
         IObjectsStateProvider _objectsStateProvider;
+
+        List<UIElement> _dynamicItems = new List<UIElement>();
+        List<UIElement> _scaleLines = new List<UIElement>();
         IEnumerable<Point> _grid;
 
         int _tick = 10; // milliseconds
         private IRunnable _runningProgram;
         private ITimeProvider _timeProvider;
+
+        public double PixelsPerMeter => _pixelsPerMeterBase * zoomBar.Value;
 
         public MainWindow()
         {
@@ -46,29 +52,37 @@ namespace PhysicsPlayground.Display
         {
             if (_xMeters != 0)
             {
-                _pixelsPerMeter = canvas.ActualWidth / _xMeters;
-                _yMeters = canvas.ActualHeight / _pixelsPerMeter;
+                _pixelsPerMeterBase = canvas.ActualWidth / _xMeters;
+                _yMeters = canvas.ActualHeight / _pixelsPerMeterBase;
             }
             else if (_yMeters != 0)
             {
-                _pixelsPerMeter = canvas.ActualHeight / _yMeters;
-                _xMeters = canvas.ActualWidth / _pixelsPerMeter;
+                _pixelsPerMeterBase = canvas.ActualHeight / _yMeters;
+                _xMeters = canvas.ActualWidth / _pixelsPerMeterBase;
             }
             else
                 throw new Exception("Choose meters in x or y axis");
+
+            _x0OnCanvas = canvas.ActualWidth / 2;
+            _y0OnCanvas = canvas.ActualHeight / 2;
 
             _grid = new List<Point>();
 
             var runtime = new RunTime();
             _runningProgram = runtime;
             _timeProvider = runtime;
-            var simulator = new ConservationOfMomentumSimulator(new GridParams() { X = _xMeters, Y = _yMeters },
+            var simulator = new ConservationOfMomentumSimulator(
+                new Box()
+                {
+                    X1 = -8, X2 = 8,
+                    Y1 = -8, Y2 = 8
+                },
                 new List<(MassObject, MovementParameters2)>()
                 {
                     (new MassObject(100), new MovementParameters2()
                     {
-                        X=new InitialMovementParameters(0,100,5,0),
-                        Y=new InitialMovementParameters(10,100,5,0)
+                        X=new InitialMovementParameters(0,10,0,0),
+                        Y=new InitialMovementParameters(-9.8,10,0,0)
                     })
                 });
 
@@ -144,7 +158,7 @@ namespace PhysicsPlayground.Display
         {
             _grid = _objectsStateProvider.GetCoordinates().Select(coordinate => {
                     var (x, y) = coordinate;
-                    return new Point((int)(x * _pixelsPerMeter), (int)(y * _pixelsPerMeter));
+                    return new Point((int)(_x0OnCanvas + x * PixelsPerMeter), (int)(canvas.ActualHeight - (_y0OnCanvas + y * PixelsPerMeter)));
                 }
             );
         }
@@ -159,31 +173,112 @@ namespace PhysicsPlayground.Display
 
         private void DrawScale()
         {
+            _scaleLines.ForEach(element => canvas.Children.Remove(element));
+            _scaleLines.Clear();
+
+            Line x = new Line();
+            x.Stroke = new SolidColorBrush(Colors.DarkGray);
+            x.Opacity = 0.6;
+            x.StrokeThickness = 1;
             
+            x.X1 = 0;
+            x.X2 = canvas.ActualWidth;
+            x.Y1 = _y0OnCanvas;
+            x.Y2 = _y0OnCanvas;
+
+            _scaleLines.Add(x);
+            canvas.Children.Add(x);
+
+            Line y = new Line();
+            y.Stroke = new SolidColorBrush(Colors.DarkGray);
+            y.Opacity = 0.6;
+            y.StrokeThickness = 1;
+            
+            y.X1 = _x0OnCanvas;
+            y.X2 = _x0OnCanvas;
+            y.Y1 = 0;
+            y.Y2 = canvas.ActualHeight;
+
+            _scaleLines.Add(y);
+            canvas.Children.Add(y);
+
+            for (double i = _y0OnCanvas; i < canvas.ActualHeight; i += 2 * PixelsPerMeter)
+            {
+                var line = NewHorizontalLine(i);
+
+                _scaleLines.Add(line);
+                canvas.Children.Add(line);
+            }
+            for (double i = _y0OnCanvas; i > 0; i -= 2 * PixelsPerMeter)
+            {
+                var line = NewHorizontalLine(i);
+
+                _scaleLines.Add(line);
+                canvas.Children.Add(line);
+            }
+
+            for (double i = _x0OnCanvas; i < canvas.ActualWidth; i += 2 * PixelsPerMeter)
+            {
+                var line = NewVerticalLine(i);
+
+                _scaleLines.Add(line);
+                canvas.Children.Add(line);
+            }
+            for (double i = _x0OnCanvas; i > 0; i -= 2 * PixelsPerMeter)
+            {
+                var line = NewVerticalLine(i);
+
+                _scaleLines.Add(line);
+                canvas.Children.Add(line);
+            }
+        }
+
+        private Line NewVerticalLine(double x)
+        {
+            Line line = new Line();
+            line.Stroke = new SolidColorBrush(Colors.DarkGray);
+            line.Opacity = 0.3;
+            line.StrokeThickness = 1;
+
+            line.X1 = x;
+            line.X2 = x;
+            line.Y1 = 0;
+            line.Y2 = canvas.ActualHeight;
+            return line;
+        }
+
+        private Line NewHorizontalLine(double y)
+        {
+            Line line = new Line();
+            line.Stroke = new SolidColorBrush(Colors.DarkGray);
+            line.Opacity = 0.3;
+            line.StrokeThickness = 1;
+
+            line.X1 = 0;
+            line.X2 = canvas.ActualWidth;
+            line.Y1 = y;
+            line.Y2 = y;
+            return line;
         }
 
         private void DrawObjectsGrid()
         {
-            canvas.Children.Clear();
+            _dynamicItems.ForEach(element => canvas.Children.Remove(element));
+            _dynamicItems.Clear();
 
             var radius = 0.5D;
-            foreach (var point in _grid.Select(p => new Point(p.X - _pixelsPerMeter * radius, p.Y - _pixelsPerMeter * radius)))
+            foreach (var point in _grid.Select(p => new Point(p.X - PixelsPerMeter * radius, p.Y - PixelsPerMeter * radius)))
             {
                 Ellipse ball = new Ellipse();
-                ball.Height = 2 * (radius * _pixelsPerMeter);
-                ball.Width = 2 * (radius * _pixelsPerMeter);
+                ball.Height = 2 * (radius * PixelsPerMeter);
+                ball.Width = 2 * (radius * PixelsPerMeter);
                 ball.Fill = new SolidColorBrush(Colors.Black);
 
                 Canvas.SetLeft(ball, point.X);
                 Canvas.SetTop(ball, point.Y);
+                _dynamicItems.Add(ball);
                 canvas.Children.Add(ball);
             }
-        }
-
-        private void Zoom_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            scaleTransform.ScaleX = e.NewValue;
-            scaleTransform.ScaleY = e.NewValue;
         }
     }
 }
