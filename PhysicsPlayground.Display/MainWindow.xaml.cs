@@ -75,7 +75,7 @@ namespace PhysicsPlayground.Display
             startBtn.IsEnabled = false;
             stopBtn.IsEnabled = false;
             loadingLabel.Content = "Generating Simulation...";
-            ISimulation simulation = await simulator.GenerateSimulationAsync(0, 1000);
+            ISimulation simulation = await simulator.GenerateSimulationAsync(0, 60);
             startBtn.IsEnabled = true;
             stopBtn.IsEnabled = true;
             loadingLabel.Content = "Simulation Ready";
@@ -166,17 +166,24 @@ namespace PhysicsPlayground.Display
         {
             canvas.Children.Clear();
 
-            foreach (var point in _grid.Select(p => new Point(p.X - 10, p.Y - 10)))
+            var radius = 0.5D;
+            foreach (var point in _grid.Select(p => new Point(p.X - _pixelsPerMeter * radius, p.Y - _pixelsPerMeter * radius)))
             {
                 Ellipse ball = new Ellipse();
-                ball.Height = 20;
-                ball.Width = 20;
+                ball.Height = 2 * (radius * _pixelsPerMeter);
+                ball.Width = 2 * (radius * _pixelsPerMeter);
                 ball.Fill = new SolidColorBrush(Colors.Black);
 
                 Canvas.SetLeft(ball, point.X);
                 Canvas.SetTop(ball, point.Y);
                 canvas.Children.Add(ball);
             }
+        }
+
+        private void Zoom_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            scaleTransform.ScaleX = e.NewValue;
+            scaleTransform.ScaleY = e.NewValue;
         }
     }
 }
