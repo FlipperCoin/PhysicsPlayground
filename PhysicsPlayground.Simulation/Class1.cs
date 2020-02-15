@@ -74,7 +74,7 @@ namespace PhysicsPlayground.Simulation
                     var yEquations = BuildAxisEquations(t1, t2, y, 0, _grid.Y);
 
                     return new MovementEquation(xEquations, yEquations);
-                });
+                }).ToList();
 
             return new Simulation(movementEquations);
         }

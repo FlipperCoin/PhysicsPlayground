@@ -13,6 +13,7 @@
             </Canvas>
             <Border BorderThickness="0 1 0 0" BorderBrush="Black">
                 <WrapPanel DockPanel.Dock="Bottom" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <Label Name="loadingLabel" Margin="0 0 10 0"></Label>
                     <Label Name="timerLabel" Margin ="0 0 10 0"></Label>
                     <Button Name="startBtn" Click="StartButton_Click" Content="Start" Width="64" VerticalAlignment="Center" Margin="0 0 25 0"/>
                     <Button Name="stopBtn" Click="StopButton_Click" Content="Stop" Width="64" VerticalAlignment="Center" Margin="0 0 15 0"></Button>

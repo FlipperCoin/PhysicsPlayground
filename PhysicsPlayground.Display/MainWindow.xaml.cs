@@ -42,7 +42,7 @@ namespace PhysicsPlayground.Display
             Loaded += (sender, args) => Initialize();
         }
 
-        private void Initialize()
+        private async void Initialize()
         {
             if (_xMeters != 0)
             {
@@ -57,15 +57,7 @@ namespace PhysicsPlayground.Display
             else
                 throw new Exception("Choose meters in x or y axis");
 
-            _clock = new DispatcherTimer();
-            _clock.Interval = TimeSpan.FromMilliseconds(_tick);
-            _clock.Tick += (o, e) => OnClock();
-            _clock.Start();
-
             _grid = new List<Point>();
-
-            //_engine = new ForcesEngineFactory(new GridParams() {X = _xMeters, Y = _yMeters})
-            //    .GetEngine();
 
             var runtime = new RunTime();
             _runningProgram = runtime;
@@ -79,7 +71,19 @@ namespace PhysicsPlayground.Display
                         Y=new InitialMovementParameters(10,100,5,0)
                     })
                 });
-            _objectsStateProvider = new SimulationRunner(simulator.GenerateSimulation(0, 60), runtime);
+
+            startBtn.IsEnabled = false;
+            stopBtn.IsEnabled = false;
+            loadingLabel.Content = "Generating Simulation...";
+            ISimulation simulation = await simulator.GenerateSimulationAsync(0, 1000);
+            startBtn.IsEnabled = true;
+            stopBtn.IsEnabled = true;
+            loadingLabel.Content = "Simulation Ready";
+            _objectsStateProvider = new SimulationRunner(simulation, runtime);
+            _clock = new DispatcherTimer();
+            _clock.Interval = TimeSpan.FromMilliseconds(_tick);
+            _clock.Tick += (o, e) => OnClock();
+            _clock.Start();
 
             UpdateObjectsOnGrid();
         }
