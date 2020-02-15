@@ -75,8 +75,8 @@ namespace PhysicsPlayground.Display
                 {
                     (new MassObject(100), new MovementParameters2()
                     {
-                        X=new InitialMovementParameters(0,15,5,0),
-                        Y=new InitialMovementParameters(0,15,5,0)
+                        X=new InitialMovementParameters(0,100,5,0),
+                        Y=new InitialMovementParameters(10,100,5,0)
                     })
                 });
             _objectsStateProvider = new SimulationRunner(simulator.GenerateSimulation(0, 60), runtime);

@@ -94,11 +94,7 @@ namespace PhysicsPlayground.Simulation
         public static Polynomial GetPolynomialMovementEquation(double a0, double v0, double d0, double t0)
         {
             var a = new Polynomial(a0);
-            var d =
-                (a.AntiDerivative() + v0)
-                .AntiDerivative();
-            d -= d.Evaluate(t0);
-            d += d0;
+            var d = a.AntiDerivative(v0).AntiDerivative(d0).Offset(-t0);
 
             return d;
         }

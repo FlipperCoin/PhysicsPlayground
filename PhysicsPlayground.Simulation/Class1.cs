@@ -91,8 +91,8 @@ namespace PhysicsPlayground.Simulation
             {
                 // Using root > t instead of >= means that putting the object on the edge from the start
                 // means that it will go the direction it was set to
-                var rootsWithMin = pol.Roots(axisMin).Where(root => root > t && root <= t2);
-                var rootsWithMax = pol.Roots(axisMax).Where(root => root > t && root <= t2);
+                var rootsWithMin = pol.Roots(axisMin).Where(root => root.CompareTo(t,5e-6) == 1 && root <= t2);
+                var rootsWithMax = pol.Roots(axisMax).Where(root => root.CompareTo(t, 5e-6) == 1 && root <= t2);
 
                 var roots = rootsWithMin.Concat(rootsWithMax);
                 if (!roots.Any())

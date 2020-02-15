@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using MathNet.Numerics;
+using MathNet.Numerics.Financial;
 
 namespace PhysicsPlayground.Math
 {
@@ -12,6 +13,17 @@ namespace PhysicsPlayground.Math
             Coefficients = coefficients.Reverse().SkipWhile(co => co == 0).Reverse().ToArray();
         }
 
+        public Polynomial Offset(double offset)
+        {
+            Polynomial sumPol = new Polynomial();
+            for (var i = 0; i < Coefficients.Length; i++)
+            {
+                sumPol += Coefficients[i] * ((new Polynomial(offset, 1)) ^ i);
+            }
+
+            return sumPol;
+        }
+
         public Polynomial AntiDerivative(double arbitraryConstant = 0)
         {
             var newCoefficients = new double[Coefficients.Length + 1];
@@ -22,6 +34,41 @@ namespace PhysicsPlayground.Math
             }
 
             return new Polynomial(newCoefficients);
+        }
+
+        public static Polynomial operator *(double c, Polynomial p2)
+        {
+            return new Polynomial(p2.Coefficients.Select(a => a * c).ToArray());
+        }
+
+        public static Polynomial operator *(Polynomial p1, double c) => c * p1;
+
+        public static Polynomial operator *(Polynomial p1, Polynomial p2)
+        {
+            Polynomial sumPol = new Polynomial();
+            for (var i = 0; i < p1.Coefficients.Length; i++)
+            {
+                var multipliedPolCos = new double[i + p2.Coefficients.Length];
+                for (var j = 0; j < p2.Coefficients.Length; j++)
+                {
+                    multipliedPolCos[i + j] = p1.Coefficients[i] * p2.Coefficients[j];
+                }
+
+                sumPol += new Polynomial(multipliedPolCos);
+            }
+
+            return sumPol;
+        }
+
+        public static Polynomial operator ^(Polynomial p1, double pow)
+        {
+            Polynomial mulPol = new Polynomial(1);
+            for (int i = 0; i < pow; i++)
+            {
+                mulPol *= p1;
+            }
+
+            return mulPol;
         }
 
         public static Polynomial operator +(Polynomial p1, Polynomial p2)
