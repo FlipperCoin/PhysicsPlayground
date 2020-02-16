@@ -14,12 +14,14 @@ namespace PhysicsPlayground.Math
             Coefficients = coefficients.Reverse().SkipWhile(co => co == 0).Reverse().ToArray();
         }
 
-        public Polynomial Offset(double offset)
+        public Polynomial Offset(double offset) => Composition(new Polynomial(offset, 1));
+
+        public Polynomial Composition(Polynomial p2)
         {
             Polynomial sumPol = new Polynomial();
             for (var i = 0; i < Coefficients.Length; i++)
             {
-                sumPol += Coefficients[i] * ((new Polynomial(offset, 1)) ^ i);
+                sumPol += Coefficients[i] * (p2 ^ i);
             }
 
             return sumPol;
@@ -137,7 +139,23 @@ namespace PhysicsPlayground.Math
             Roots(double line = 0, double x1 = Double.NegativeInfinity, double x2 = Double.PositiveInfinity) =>
             Roots(new Polynomial(line), x1, x2);
 
+        public static bool operator ==(Polynomial p1, Polynomial p2) => p1.Equals(p2);
+
+        public static bool operator !=(Polynomial p1, Polynomial p2) => !(p1 == p2);
+
         public static Polynomial Zero => new Polynomial(0);
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Polynomial polynomial) return Equals(polynomial);
+            
+            return false;
+        }
+
+        public bool Equals(Polynomial p2)
+        {
+            return Coefficients.SequenceEqual(p2.Coefficients);
+        }
 
         public override string ToString()
         {
