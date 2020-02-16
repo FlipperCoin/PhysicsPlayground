@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using MathNet.Numerics;
 using MathNet.Numerics.Financial;
 
@@ -73,14 +74,16 @@ namespace PhysicsPlayground.Math
 
         public static Polynomial operator +(Polynomial p1, Polynomial p2)
         {
-            var zipped = p1.Coefficients.Zip(p2.Coefficients, (first,second) => first+second).ToList();
-            
-            var (higherDim, lowerDim) = 
+            var zipped = p1.Coefficients.Zip(p2.Coefficients, (first, second) => first + second).ToList();
+
+            var (higherDim, lowerDim) =
                 p1.Coefficients.Length > p2.Coefficients.Length ? (p1, p2) : (p2, p1);
             zipped.AddRange(higherDim.Coefficients.Skip(lowerDim.Coefficients.Length));
-            
+
             return new Polynomial(zipped.ToArray());
         }
+
+        public static Polynomial operator -(Polynomial p1, Polynomial p2) => p1 + (-1 * p2);
 
         public static Polynomial operator +(Polynomial p1, double x)
         {
@@ -123,8 +126,18 @@ namespace PhysicsPlayground.Math
             return new Polynomial(newCo);
         }
 
-        public double[] Roots(double line = 0) => FindRoots.Polynomial((this - line).Coefficients).Where(c => c.IsReal()).Select(c => c.Real)
+
+        public double[] Roots(Polynomial line, double x1 = Double.NegativeInfinity, double x2 = Double.PositiveInfinity,
+            double absoluteMaximumError = 5e-6) => FindRoots.Polynomial((this - line).Coefficients)
+            .Where(c => c.IsReal()).Select(c => c.Real)
+            .Where(x => x.CompareTo(x1, absoluteMaximumError) == 1 && x.CompareTo(x2, absoluteMaximumError) <= 0)
             .ToArray();
+
+        public double[]
+            Roots(double line = 0, double x1 = Double.NegativeInfinity, double x2 = Double.PositiveInfinity) =>
+            Roots(new Polynomial(line), x1, x2);
+
+        public static Polynomial Zero => new Polynomial(0);
 
         public override string ToString()
         {

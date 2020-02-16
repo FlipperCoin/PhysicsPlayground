@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using PhysicsPlayground.Simulation;
+using PhysicsPlayground.Simulation.Simulators;
 
 namespace PhysicsPlayground.Display
 {
@@ -71,18 +72,18 @@ namespace PhysicsPlayground.Display
             var runtime = new RunTime();
             _runningProgram = runtime;
             _timeProvider = runtime;
-            var simulator = new ConservationOfMomentumSimulator(
-                new Box()
-                {
-                    X1 = -8, X2 = 8,
-                    Y1 = -8, Y2 = 8
-                },
+            var simulator = new ElasticCollisionSimulator( 
                 new List<(MassObject, MovementParameters2)>()
                 {
                     (new MassObject(100), new MovementParameters2()
                     {
-                        X=new InitialMovementParameters(0,10,0,0),
-                        Y=new InitialMovementParameters(-9.8,10,0,0)
+                        X=new InitialMovementParameters(0,5,-5,0),
+                        Y=new InitialMovementParameters(0,0,0,0)
+                    }),
+                    (new MassObject(100), new MovementParameters2()
+                    {
+                        X=new InitialMovementParameters(0,-5,5,0),
+                        Y=new InitialMovementParameters(0,0,0,0)
                     })
                 });
 
