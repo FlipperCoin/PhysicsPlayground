@@ -77,13 +77,33 @@ namespace PhysicsPlayground.Display
                 {
                     (new MassObject(100), new MovementParameters2()
                     {
+                        X=new InitialMovementParameters(0,10,-5,0),
+                        Y=new InitialMovementParameters(0,5,0,0)
+                    }),
+                    (new MassObject(100), new MovementParameters2()
+                    {
+                        X=new InitialMovementParameters(0,-3,2,0),
+                        Y=new InitialMovementParameters(0,-1,2,0)
+                    }),
+                    (new MassObject(100), new MovementParameters2()
+                    {
                         X=new InitialMovementParameters(0,2,-2,0),
                         Y=new InitialMovementParameters(0,-4,1,0)
                     }),
                     (new MassObject(100), new MovementParameters2()
                     {
+                        X=new InitialMovementParameters(0,1,-3,0),
+                        Y=new InitialMovementParameters(0,1,-1,0)
+                    }),
+                    (new MassObject(100), new MovementParameters2()
+                    {
                         X=new InitialMovementParameters(0,-3,4,0),
                         Y=new InitialMovementParameters(0,1,-4,0)
+                    }),
+                    (new MassObject(100), new MovementParameters2()
+                    {
+                        X=new InitialMovementParameters(0,-10,5,0),
+                        Y=new InitialMovementParameters(0,5,0,0)
                     })
                 });
 

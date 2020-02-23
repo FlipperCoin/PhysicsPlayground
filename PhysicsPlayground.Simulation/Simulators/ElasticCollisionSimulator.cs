@@ -94,15 +94,16 @@ namespace PhysicsPlayground.Simulation.Simulators
             var u2t = v2t;
             var v2p = v2 - v2t;
 
-            var p_p = (perpendicular.AngleTo(v1p).Degrees == 0 ? 1 : -1) * m1 * v1p.Length 
-                      + (perpendicular.AngleTo(v2p).Degrees == 0 ? 1 : -1) * m2 * v2p.Length;
+            var p_p_vector = (m1 * v1p + m2 * v2p);
+            var p_p = (p_p_vector.AngleTo(perpendicular).Degrees % 360 == 0 ? 1 : -1) * p_p_vector.Length;
 
             // u1p based on u2p
             var u1p = new Polynomial(p_p / m1, -m2 / m1);
             var u2pLengths = (0.5 * m1 * ((u1p ^ 2) + System.Math.Pow(u1t.Length, 2)) +
                               0.5 * m2 * ((new Polynomial(0, 1) ^ 2) + System.Math.Pow(u2t.Length, 2))).Roots(e);
             
-            var u2pLength = u2pLengths.First(); // TODO: What is the meaning of this physically
+            var u2pLength = u2pLengths.First(len =>
+                len.CompareTo((v2p.AngleTo(perpendicular).Degrees % 360 == 0 ? 1 : -1) * v2p.Length, 5e-6) != 0);
             var u1pLength = u1p.Evaluate(u2pLength);
 
             var u1 = perpendicular * u1pLength + u1t;
@@ -161,7 +162,7 @@ namespace PhysicsPlayground.Simulation.Simulators
                     var meetingPointsPol = (dx ^ 2) + (dy ^ 2) - System.Math.Pow(r1 + r2, 2);
                     var meetingPoints = FindRoots.Polynomial(meetingPointsPol.Coefficients).Where(r => r.IsReal()).Select(r => r.Real).Where(r => r.CompareTo(t, 5e-6) == 1 && r.CompareTo(tmpMinRoot, 5e-6) < 0);
                     
-                    if (meetingPoints.Any() && meetingPoints.Min().CompareTo(minRoot) < 0)
+                    if (meetingPoints.Any())
                     {
                         tmpMinRoot = meetingPoints.Min();
                         obj1Index = i;
