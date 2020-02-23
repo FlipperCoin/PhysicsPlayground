@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using PhysicsPlayground.Math;
 using MathNet.Numerics;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Spatial.Euclidean;
+using MathNet.Spatial.Units;
 using Polynomial = PhysicsPlayground.Math.Polynomial;
+using Vector = MathNet.Numerics.LinearAlgebra.Double.Vector;
 
 namespace PhysicsPlayground.Simulation.Simulators
 {
@@ -53,138 +58,119 @@ namespace PhysicsPlayground.Simulation.Simulators
                 new MovementEquation(obj.Item2.Item1.xEquations, obj.Item2.Item2.yEquations)).ToList());
         }
 
-        private static void UpdateMovementEquations(List<(MassObject massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, int? obj1Index, int? obj2Index, double minRoot)
+        private static void UpdateMovementEquations(List<(MassObject massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, int? obj1Index, int? obj2Index, double t)
         {
             var (massObj1, ((xEquations1, xPol1), (yEquations1, yPol1))) = objects[obj1Index.Value];
             var (massObj2, ((xEquations2, xPol2), (yEquations2, yPol2))) = objects[obj2Index.Value];
 
-            var nextInterval = (Endpoints.Closed(minRoot), Endpoints.Unbounded);
+            var nextInterval = (Endpoints.Closed(t), Endpoints.Unbounded);
 
-            var xVel1 = xPol1.Derivative().Evaluate(minRoot);
-            var yVel1 = yPol1.Derivative().Evaluate(minRoot);
-            var v1 = System.Math.Sqrt(System.Math.Pow(xVel1, 2) + System.Math.Pow(yVel1, 2));
-            var xVel2 = xPol2.Derivative().Evaluate(minRoot);
-            var yVel2 = yPol2.Derivative().Evaluate(minRoot);
-            var v2 = System.Math.Sqrt(System.Math.Pow(xVel2, 2) + System.Math.Pow(yVel2, 2));
+            var x1 = xPol1;
+            var y1 = yPol1;
+            var x2 = xPol2;
+            var y2 = yPol2;
+            var vx1 = xPol1.Derivative().Evaluate(t);
+            var vy1 = yPol1.Derivative().Evaluate(t);
+            var v1 = new Vector2D(vx1, vy1);
+            var vx2 = xPol2.Derivative().Evaluate(t);
+            var vy2 = yPol2.Derivative().Evaluate(t);
+            var v2 = new Vector2D(vx2, vy2);
             var m1 = massObj1.Mass;
             var m2 = massObj2.Mass;
 
-            var pX = m1 * xVel1 + m2 * xVel2;
-            var pY = m1 * yVel1 + m2 * yVel2;
-            var e = 0.5 * m1 * System.Math.Pow(xVel1, 2) + 0.5 * m2 * System.Math.Pow(xVel1, 2);
+            var e = 0.5 * m1 * System.Math.Pow(v1.Length, 2) + 0.5 * m2 * System.Math.Pow(v2.Length, 2);
 
+            var dx = (x2 - x1);
+            var dy = (y2 - y1);
 
+            var perpendicular = new Vector2D(dx.Evaluate(t), dy.Evaluate(t)).Normalize();
+            var tangent = perpendicular.Orthogonal.Normalize();
 
-            var xParams1 = new InitialMovementParameters()
-            {
-                D0 = xPol1.Evaluate(minRoot),
-                V0 = -xPol1.Derivative().Evaluate(minRoot),
-                A0 = xPol1.Derivative().Derivative().Evaluate(minRoot),
-                T0 = minRoot
-            };
+            var v1t = v1.ProjectOn(tangent);
+            var u1t = v1t;
+            var v1p = v1 - v1t;
 
-            var newXPol1 = MovementEquation.GetPolynomialMovementEquation(xParams1);
-            xEquations1.AddInterval(nextInterval, newXPol1);
-            xPol1 = newXPol1;
+            var v2t = v2.ProjectOn(tangent);
+            var u2t = v2t;
+            var v2p = v2 - v2t;
 
-            var yParams1 = new InitialMovementParameters()
-            {
-                D0 = yPol1.Evaluate(minRoot),
-                V0 = -yPol1.Derivative().Evaluate(minRoot),
-                A0 = yPol1.Derivative().Derivative().Evaluate(minRoot),
-                T0 = minRoot
-            };
+            var p_p = (perpendicular.AngleTo(v1p).Degrees == 0 ? 1 : -1) * m1 * v1p.Length 
+                      + (perpendicular.AngleTo(v2p).Degrees == 0 ? 1 : -1) * m2 * v2p.Length;
 
-            var newYPol1 = MovementEquation.GetPolynomialMovementEquation(yParams1);
-            yEquations1.AddInterval(nextInterval, newYPol1);
-            yPol1 = newYPol1;
+            // u1p based on u2p
+            var u1p = new Polynomial(p_p / m1, -m2 / m1);
+            var u2pLengths = (0.5 * m1 * ((u1p ^ 2) + System.Math.Pow(u1t.Length, 2)) +
+                              0.5 * m2 * ((new Polynomial(0, 1) ^ 2) + System.Math.Pow(u2t.Length, 2))).Roots(e);
+            
+            var u2pLength = u2pLengths.First(); // TODO: What is the meaning of this physically
+            var u1pLength = u1p.Evaluate(u2pLength);
 
-            var xParams2 = new InitialMovementParameters()
-            {
-                D0 = xPol2.Evaluate(minRoot),
-                V0 = -xPol2.Derivative().Evaluate(minRoot),
-                A0 = xPol2.Derivative().Derivative().Evaluate(minRoot),
-                T0 = minRoot
-            };
+            var u1 = perpendicular * u1pLength + u1t;
+            var u2 = perpendicular * u2pLength + u2t;
 
-            var newXPol2 = MovementEquation.GetPolynomialMovementEquation(xParams2);
-            xEquations2.AddInterval(nextInterval, newXPol2);
-            xPol2 = newXPol2;
+            var newX1 = MovementEquation.GetPolynomialMovementEquation(
+                    x1.Derivative().Derivative().Evaluate(t),
+                    u1.X,
+                    x1.Evaluate(t),
+                    t
+                );
+            var newY1 = MovementEquation.GetPolynomialMovementEquation(
+                    y1.Derivative().Derivative().Evaluate(t),
+                    u1.Y,
+                    y1.Evaluate(t),
+                    t
+                );
+            var newX2 = MovementEquation.GetPolynomialMovementEquation(
+                    x2.Derivative().Derivative().Evaluate(t),
+                    u2.X,
+                    x2.Evaluate(t),
+                    t
+                );
+            var newY2 = MovementEquation.GetPolynomialMovementEquation(
+                    y2.Derivative().Derivative().Evaluate(t),
+                    u2.Y,
+                    y2.Evaluate(t),
+                    t
+                );
 
-            var yParams2 = new InitialMovementParameters()
-            {
-                D0 = yPol2.Evaluate(minRoot),
-                V0 = -yPol2.Derivative().Evaluate(minRoot),
-                A0 = yPol2.Derivative().Derivative().Evaluate(minRoot),
-                T0 = minRoot
-            };
+            xEquations1.AddInterval(nextInterval, newX1);
+            yEquations1.AddInterval(nextInterval, newY1);
+            xEquations2.AddInterval(nextInterval, newX2);
+            yEquations2.AddInterval(nextInterval, newY2);
 
-            var newYPol2 = MovementEquation.GetPolynomialMovementEquation(yParams2);
-            yEquations2.AddInterval(nextInterval, newYPol2);
-            yPol2 = newYPol2;
-
-            objects[obj1Index.Value] = (massObj1, ((xEquations1, xPol1), (yEquations1, yPol1)));
-            objects[obj2Index.Value] = (massObj2, ((xEquations2, xPol2), (yEquations2, yPol2)));
+            objects[obj1Index.Value] = (massObj1, ((xEquations1, newX1), (yEquations1, newY1)));
+            objects[obj2Index.Value] = (massObj2, ((xEquations2, newX2), (yEquations2, newY2)));
         }
 
         private static bool GetNextCollision(double t2, List<(MassObject massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, double t, ref double minRoot, ref int? obj1Index,
             ref int? obj2Index)
         {
+            // minRoot is a ref param and can't be used in anonymous lambda functions :/
+            var tmpMinRoot = t2;
             for (var i = 0; i < objects.Count; i++)
             {
-                var (_, ((_, tmpXPol1), (_, tmpYPol1))) = objects[i];
+                var (_, ((_, x1), (_, y1))) = objects[i];
                 for (var j = i + 1; j < objects.Count; j++)
                 {
-                    var (_, ((_, tmpXPol2), (_, tmpYPol2))) = objects[j];
+                    var (_, ((_, x2), (_, y2))) = objects[j];
 
-                    double? pairMinRoot = default;
+                    var dx = x2 - x1;
+                    var dy = y2 - y1;
 
-                    if (tmpXPol1 != tmpXPol2)
+                    double r1 = 0.5, r2 = 0.5;
+                    var meetingPointsPol = (dx ^ 2) + (dy ^ 2) - System.Math.Pow(r1 + r2, 2);
+                    var meetingPoints = FindRoots.Polynomial(meetingPointsPol.Coefficients).Where(r => r.IsReal()).Select(r => r.Real).Where(r => r.CompareTo(t, 5e-6) == 1 && r.CompareTo(tmpMinRoot, 5e-6) < 0);
+                    
+                    if (meetingPoints.Any() && meetingPoints.Min().CompareTo(minRoot) < 0)
                     {
-                        var xRoots = tmpXPol1.Roots(tmpXPol2, t, t2);
-                        if (!xRoots.Any()) continue;
-
-                        if (tmpYPol1 != tmpYPol2)
-                        {
-                            var yRoots = tmpYPol1.Roots(tmpYPol2, t, t2);
-                            if (!yRoots.Any()) continue;
-
-                            var colPoints = xRoots
-                                .Where(xr => yRoots.Any(yr => yr.AlmostEqual(yr, 5e-6)));
-
-                            if (colPoints.Any())
-                            {
-                                pairMinRoot = colPoints.Min();
-                            }
-                        }
-                        else
-                        {
-                            pairMinRoot = xRoots.Min();
-                        }
-                    }
-                    else if (tmpYPol1 != tmpYPol2)
-                    {
-                        var yRoots = tmpYPol1.Roots(tmpYPol2, t, t2);
-                        if (!yRoots.Any()) continue;
-
-                        pairMinRoot = yRoots.Min();
-                    }
-                    else
-                    {
-                        pairMinRoot = t;
-                    }
-
-                    if (!pairMinRoot.HasValue) continue;
-
-                    if (pairMinRoot.Value.CompareTo(minRoot) < 0)
-                    {
-                        minRoot = pairMinRoot.Value;
+                        tmpMinRoot = meetingPoints.Min();
                         obj1Index = i;
                         obj2Index = j;
                     }
                 }
             }
 
+            minRoot = tmpMinRoot;
             if (!obj1Index.HasValue) return true;
             return false;
         }

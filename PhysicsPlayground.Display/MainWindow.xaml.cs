@@ -77,20 +77,20 @@ namespace PhysicsPlayground.Display
                 {
                     (new MassObject(100), new MovementParameters2()
                     {
-                        X=new InitialMovementParameters(0,10,-5,0),
-                        Y=new InitialMovementParameters(0,10,0,0)
+                        X=new InitialMovementParameters(0,2,-2,0),
+                        Y=new InitialMovementParameters(0,-4,1,0)
                     }),
                     (new MassObject(100), new MovementParameters2()
                     {
-                        X=new InitialMovementParameters(0,-10,5,0),
-                        Y=new InitialMovementParameters(0,10,0,0)
+                        X=new InitialMovementParameters(0,-3,4,0),
+                        Y=new InitialMovementParameters(0,1,-4,0)
                     })
                 });
 
             startBtn.IsEnabled = false;
             stopBtn.IsEnabled = false;
             loadingLabel.Content = "Generating Simulation...";
-            ISimulation simulation = await simulator.GenerateSimulationAsync(0, 60);
+            ISimulation simulation = await simulator.GenerateSimulationAsync(0, 20);
             startBtn.IsEnabled = true;
             stopBtn.IsEnabled = true;
             loadingLabel.Content = "Simulation Ready";
