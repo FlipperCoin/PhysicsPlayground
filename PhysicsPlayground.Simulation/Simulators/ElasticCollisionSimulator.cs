@@ -11,6 +11,7 @@ using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Spatial.Euclidean;
 using MathNet.Spatial.Units;
+using Serilog;
 using Polynomial = PhysicsPlayground.Math.Polynomial;
 using Vector = MathNet.Numerics.LinearAlgebra.Double.Vector;
 
@@ -19,6 +20,7 @@ namespace PhysicsPlayground.Simulation.Simulators
     public class ElasticCollisionSimulator : SyncSimulator
     {
         private readonly IList<(MassObject, MovementParameters2)> _objectsAndMovementParameters;
+        private readonly ILogger _logger = Log.Logger.ForContext<ElasticCollisionSimulator>();
 
         public ElasticCollisionSimulator(IEnumerable<(MassObject, MovementParameters2)> objectsAndMovementParameters)
         {
@@ -27,6 +29,11 @@ namespace PhysicsPlayground.Simulation.Simulators
 
         public override ISimulation GenerateSimulation(double t1, double t2)
         {
+            _logger.Information(
+                "Generating elastic collision simulation starting {t1} ending {t2}", 
+                t1, 
+                t2
+                );
             var objects = _objectsAndMovementParameters.Select(obj =>
             {
                 var (massObj, movementParams2) = obj;
@@ -47,18 +54,22 @@ namespace PhysicsPlayground.Simulation.Simulators
                 var minRoot = t2;
                 int? obj1Index = default, obj2Index = default;
 
-                if (GetNextCollision(t2, objects, t, ref minRoot, ref obj1Index, ref obj2Index)) break;
+                if (!GetNextCollision(t2, objects, t, ref minRoot, ref obj1Index, ref obj2Index)) break;
+
+                _logger.Debug("Collision on {t} between {obj1Index} and {obj2Index}",minRoot,obj1Index,obj2Index);
 
                 UpdateMovementEquations(objects, obj1Index, obj2Index, minRoot);
 
                 t = minRoot;
             }
 
+            _logger.Information("Finished elastic collision simulation");
+
             return new Simulation(objects.Select(obj =>
                 new MovementEquation(obj.Item2.Item1.xEquations, obj.Item2.Item2.yEquations)).ToList());
         }
 
-        private static void UpdateMovementEquations(List<(MassObject massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, int? obj1Index, int? obj2Index, double t)
+        private void UpdateMovementEquations(List<(MassObject massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, int? obj1Index, int? obj2Index, double t)
         {
             var (massObj1, ((xEquations1, xPol1), (yEquations1, yPol1))) = objects[obj1Index.Value];
             var (massObj2, ((xEquations2, xPol2), (yEquations2, yPol2))) = objects[obj2Index.Value];
@@ -139,6 +150,13 @@ namespace PhysicsPlayground.Simulation.Simulators
             xEquations2.AddInterval(nextInterval, newX2);
             yEquations2.AddInterval(nextInterval, newY2);
 
+            _logger.Debug("new params after collision, x1: {newX1}, y1: {newY1}, x2: {newX2}, y2: {newY2}",
+                newX1,
+                newY1,
+                newX2,
+                newY2
+            );
+
             objects[obj1Index.Value] = (massObj1, ((xEquations1, newX1), (yEquations1, newY1)));
             objects[obj2Index.Value] = (massObj2, ((xEquations2, newX2), (yEquations2, newY2)));
         }
@@ -172,8 +190,7 @@ namespace PhysicsPlayground.Simulation.Simulators
             }
 
             minRoot = tmpMinRoot;
-            if (!obj1Index.HasValue) return true;
-            return false;
+            return obj1Index.HasValue;
         }
     }
 }

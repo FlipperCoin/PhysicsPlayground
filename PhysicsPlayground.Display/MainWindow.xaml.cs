@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using PhysicsPlayground.Simulation;
 using PhysicsPlayground.Simulation.Simulators;
+using Serilog;
 
 namespace PhysicsPlayground.Display
 {
@@ -44,6 +45,13 @@ namespace PhysicsPlayground.Display
 
         public MainWindow()
         {
+            var logger = new LoggerConfiguration()
+                .WriteTo.File(System.IO.Path.ChangeExtension(System.IO.Path.Join("Logs/", DateTime.Now.ToString("yyyyMMdd_HHmmss")), "txt"))
+                .MinimumLevel.Debug()
+                .CreateLogger();
+
+            Log.Logger = logger;
+
             InitializeComponent();
 
             Loaded += (sender, args) => Initialize();
@@ -69,7 +77,7 @@ namespace PhysicsPlayground.Display
 
             _grid = new List<Point>();
 
-            var runtime = new RunTime();
+            var runtime = new RunTime(0.1);
             _runningProgram = runtime;
             _timeProvider = runtime;
             var simulator = new ElasticCollisionSimulator( 

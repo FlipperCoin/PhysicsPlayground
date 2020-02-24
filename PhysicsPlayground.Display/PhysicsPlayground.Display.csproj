@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PhysicsLibrary.Engine.Momentum\PhysicsLibrary.Engine.Momentum.csproj" />
     <ProjectReference Include="..\PhysicsPlayground.Engine\PhysicsPlayground.Engine.csproj" />
     <ProjectReference Include="..\PhysicsPlayground.Simulation\PhysicsPlayground.Simulation.csproj" />

@@ -9,27 +9,29 @@ namespace PhysicsPlayground.Simulation
         private DateTime _startTime;
         public RunState RunState { get; private set; }
 
-        public RunTime()
-        {
-            RunState = RunState.Stopped;
-        }
-
         public TimeSpan Time
         {
             get => RunState switch
             {
-                RunState.Running => _baseTime + DateTime.Now.Subtract(_startTime),
+                RunState.Running =>
+                    (_baseTime + TimeSpan.FromMilliseconds(DateTime.Now.Subtract(_startTime).TotalMilliseconds*Speed)),
                 RunState.Paused => _baseTime,
                 RunState.Stopped => _t0,
                 _ => throw new Exception("Internal Error")
             };
         }
 
-        public RunTime(double t0 = 0)
+        public double Speed { get; set; }
+
+        public RunTime(double t0, double speed)
         {
+            RunState = RunState.Stopped;
+            Speed = speed;
             _t0 = TimeSpan.FromSeconds(t0);
             _baseTime = _t0;
         }
+
+        public RunTime(double speed = 1) : this(0, speed) { }
 
         public void Start()
         {
@@ -44,8 +46,8 @@ namespace PhysicsPlayground.Simulation
 
         public void Resume()
         {
-            RunState = RunState.Running;
             _startTime = DateTime.Now;
+            RunState = RunState.Running;
         }
 
         public void Stop()

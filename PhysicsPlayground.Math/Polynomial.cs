@@ -159,7 +159,29 @@ namespace PhysicsPlayground.Math
 
         public override string ToString()
         {
-            return string.Join(" + ", Coefficients.Select((co, idx) => $"{co}x^{idx}"));
+            return string.Join("", Coefficients.Reverse().Select((co, idx) =>
+            {
+                if(co == 0) return "";
+
+                string str = "";
+            
+                if (co > 0 && idx != 0)
+                {
+                    str += "+";
+                }
+
+                if (co < 0)
+                {
+                    str += "-";
+                }
+
+                if (System.Math.Abs(co) != 1) str += System.Math.Abs(co);
+            
+                
+                str += (idx == 0 ? "" : $"x" + (idx == 1 ? "" : $"^{idx}"));
+
+                return str;
+            }));
         }
     }
 }

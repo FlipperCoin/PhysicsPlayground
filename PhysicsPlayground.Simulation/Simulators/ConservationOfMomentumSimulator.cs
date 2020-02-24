@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using MathNet.Numerics;
 using Polynomial = PhysicsPlayground.Math.Polynomial;
 
-namespace PhysicsPlayground.Simulation
+namespace PhysicsPlayground.Simulation.Simulators
 {
     public class ConservationOfMomentumSimulator : SyncSimulator
     {
