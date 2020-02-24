@@ -7,25 +7,27 @@
         mc:Ignorable="d"
         Title="Physics Playground" Height="450" Width="800">
     <Grid>
-        <DockPanel>
-            <Canvas Name="canvas" MinHeight="380" DockPanel.Dock="Top">
-                <Canvas.RenderTransform>
-                    <ScaleTransform x:Name="scaleTransform"></ScaleTransform>
-                </Canvas.RenderTransform>
-            </Canvas>
-            <Border BorderThickness="0 1 0 0" BorderBrush="Black">
-                <DockPanel DockPanel.Dock="Bottom">
-                    <WrapPanel DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left">
-                        <ScrollBar Name="zoomBar" Orientation="Horizontal" Margin="10 0 0 0" MinWidth="200" Value="1" Minimum="0.1" Maximum="2"></ScrollBar>
-                    </WrapPanel>
-                    <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right">
-                        <Label Name="loadingLabel" Margin="0 0 10 0"></Label>
-                        <Label Name="timerLabel" Margin ="0 0 10 0"></Label>
-                        <Button Name="startBtn" Click="StartButton_Click" Content="Start" Width="64" VerticalAlignment="Center" Margin="0 0 25 0"/>
-                        <Button Name="stopBtn" Click="StopButton_Click" Content="Stop" Width="64" VerticalAlignment="Center" Margin="0 0 15 0"></Button>
-                    </WrapPanel>
-                </DockPanel>
-            </Border>
-        </DockPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.9*"></RowDefinition>
+            <RowDefinition Height="0.1*" ></RowDefinition>
+        </Grid.RowDefinitions>
+        <Canvas Name="canvas" Grid.Row="0" Background="AliceBlue" ClipToBounds="True">
+            <Canvas.RenderTransform>
+                <ScaleTransform x:Name="scaleTransform"></ScaleTransform>
+            </Canvas.RenderTransform>
+        </Canvas>
+        <Border BorderThickness="0 1 0 0" BorderBrush="Black" Grid.Row="1">
+            <DockPanel>
+                <WrapPanel DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <ScrollBar Name="zoomBar" Orientation="Horizontal" Margin="10 0 0 0" MinWidth="200" Value="1" Minimum="0.1" Maximum="2"></ScrollBar>
+                </WrapPanel>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <Label Name="loadingLabel" Margin="0 0 10 0"></Label>
+                    <Label Name="timerLabel" Margin ="0 0 10 0"></Label>
+                    <Button Name="startBtn" Click="StartButton_Click" Content="Start" Width="64" VerticalAlignment="Center" Margin="0 0 25 0"/>
+                    <Button Name="stopBtn" Click="StopButton_Click" Content="Stop" Width="64" VerticalAlignment="Center" Margin="0 0 15 0"></Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
     </Grid>
 </Window>

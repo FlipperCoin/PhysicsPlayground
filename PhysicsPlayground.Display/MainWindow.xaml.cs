@@ -179,7 +179,7 @@ namespace PhysicsPlayground.Display
         {
             _grid = _objectsStateProvider.GetCoordinates().Select(coordinate => {
                     var (x, y) = coordinate;
-                    return new Point((int)(_x0OnCanvas + x * PixelsPerMeter), (int)(canvas.ActualHeight - (_y0OnCanvas + y * PixelsPerMeter)));
+                    return new Point((int)(_x0OnCanvas + x * PixelsPerMeter), (int)(_y0OnCanvas + y * PixelsPerMeter));
                 }
             );
         }
