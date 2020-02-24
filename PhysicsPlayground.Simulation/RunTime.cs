@@ -21,12 +21,22 @@ namespace PhysicsPlayground.Simulation
             };
         }
 
-        public double Speed { get; set; }
+        private double _speed;
+        public double Speed
+        {
+            get => _speed;
+            set
+            {
+                _baseTime = Time;
+                _startTime = DateTime.Now;
+                _speed = value;
+            }
+        }
 
         public RunTime(double t0, double speed)
         {
             RunState = RunState.Stopped;
-            Speed = speed;
+            _speed = speed;
             _t0 = TimeSpan.FromSeconds(t0);
             _baseTime = _t0;
         }

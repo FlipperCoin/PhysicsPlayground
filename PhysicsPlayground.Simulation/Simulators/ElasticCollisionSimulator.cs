@@ -108,13 +108,13 @@ namespace PhysicsPlayground.Simulation.Simulators
             var p_p_vector = (m1 * v1p + m2 * v2p);
             var p_p = (p_p_vector.AngleTo(perpendicular).Degrees % 360 == 0 ? 1 : -1) * p_p_vector.Length;
 
-            // u1p based on u2p
-            var u1p = new Polynomial(p_p / m1, -m2 / m1);
+            var u1p = new Polynomial(p_p / m1, -m2 / m1); // u1p based on u2p
             var u2pLengths = (0.5 * m1 * ((u1p ^ 2) + System.Math.Pow(u1t.Length, 2)) +
                               0.5 * m2 * ((new Polynomial(0, 1) ^ 2) + System.Math.Pow(u2t.Length, 2))).Roots(e);
-            
+
+            var v2p_dir = (v2p.AngleTo(perpendicular).Degrees % 360 == 0 ? 1 : -1);
             var u2pLength = u2pLengths.First(len =>
-                len.CompareTo((v2p.AngleTo(perpendicular).Degrees % 360 == 0 ? 1 : -1) * v2p.Length, 5e-6) != 0);
+                len.CompareTo( v2p_dir * v2p.Length, 5e-6) != 0);
             var u1pLength = u1p.Evaluate(u2pLength);
 
             var u1 = perpendicular * u1pLength + u1t;

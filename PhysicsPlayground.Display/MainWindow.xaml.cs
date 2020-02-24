@@ -77,7 +77,7 @@ namespace PhysicsPlayground.Display
 
             _grid = new List<Point>();
 
-            var runtime = new RunTime(0.1);
+            var runtime = new RunTime();
             _runningProgram = runtime;
             _timeProvider = runtime;
             var simulator = new ElasticCollisionSimulator( 
@@ -187,7 +187,7 @@ namespace PhysicsPlayground.Display
         {
             _grid = _objectsStateProvider.GetCoordinates().Select(coordinate => {
                     var (x, y) = coordinate;
-                    return new Point((int)(_x0OnCanvas + x * PixelsPerMeter), (int)(_y0OnCanvas + y * PixelsPerMeter));
+                    return new Point((int)(_x0OnCanvas + x * PixelsPerMeter), (int)(_y0OnCanvas - y * PixelsPerMeter));
                 }
             );
         }
@@ -308,6 +308,25 @@ namespace PhysicsPlayground.Display
                 _dynamicItems.Add(ball);
                 canvas.Children.Add(ball);
             }
+        }
+
+        private void SpeedTextBox_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                UpdateSpeed();
+                speedTextBox.MoveFocus(new TraversalRequest(FocusNavigationDirection.Right));
+            }
+        }
+
+        private void SpeedTextBox_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            UpdateSpeed();
+        }
+
+        private void UpdateSpeed()
+        {
+            _timeProvider.Speed = double.Parse(speedTextBox.Text);
         }
     }
 }
