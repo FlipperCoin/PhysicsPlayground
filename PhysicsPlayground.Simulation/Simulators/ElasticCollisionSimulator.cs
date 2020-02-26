@@ -16,17 +16,29 @@ using Polynomial = PhysicsPlayground.Math.Polynomial;
 
 namespace PhysicsPlayground.Simulation.Simulators
 {
-    public class ElasticCollisionSimulator : SyncSimulator
+    public class MassEllipse
     {
-        private readonly IList<(MassObject, MovementParameters2)> _objectsAndMovementParameters;
+        public double Radius { get; set; }
+        public double Mass { get; set; }
+
+        public MassEllipse(double mass, double radius)
+        {
+            Mass = mass;
+            Radius = radius;
+        }
+    }
+
+    public class ElasticCollisionSimulator : SyncSimulator<IEnumerable<(MassEllipse, (double, double))>>
+    {
+        private readonly IList<(MassEllipse, MovementParameters2)> _objectsAndMovementParameters;
         private readonly ILogger _logger = Log.Logger.ForContext<ElasticCollisionSimulator>();
 
-        public ElasticCollisionSimulator(IEnumerable<(MassObject, MovementParameters2)> objectsAndMovementParameters)
+        public ElasticCollisionSimulator(IEnumerable<(MassEllipse, MovementParameters2)> objectsAndMovementParameters)
         {
             _objectsAndMovementParameters = objectsAndMovementParameters.ToList();
         }
 
-        public override ISimulation<IEnumerable<(double, double)>> GenerateSimulation(double t1, double t2)
+        public override ISimulation<IEnumerable<(MassEllipse, (double, double))>> GenerateSimulation(double t1, double t2)
         {
             _logger.Information(
                 "Generating elastic collision simulation starting {t1} ending {t2}", 
@@ -64,11 +76,11 @@ namespace PhysicsPlayground.Simulation.Simulators
 
             _logger.Information("Finished elastic collision simulation");
 
-            return new Simulation(objects.Select(obj =>
-                new MovementEquation(obj.Item2.Item1.xEquations, obj.Item2.Item2.yEquations)).ToList());
+            return new PlaneMovementSimulation<MassEllipse>(objects.Select(obj =>
+                (obj.massObj, new MovementEquation(obj.Item2.Item1.xEquations, obj.Item2.Item2.yEquations))).ToList());
         }
 
-        private void UpdateMovementEquations(List<(MassObject massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, int? obj1Index, int? obj2Index, double t)
+        private void UpdateMovementEquations(List<(MassEllipse massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, int? obj1Index, int? obj2Index, double t)
         {
             var (massObj1, ((xEquations1, xPol1), (yEquations1, yPol1))) = objects[obj1Index.Value];
             var (massObj2, ((xEquations2, xPol2), (yEquations2, yPol2))) = objects[obj2Index.Value];
@@ -160,22 +172,22 @@ namespace PhysicsPlayground.Simulation.Simulators
             objects[obj2Index.Value] = (massObj2, ((xEquations2, newX2), (yEquations2, newY2)));
         }
 
-        private static bool GetNextCollision(double t2, List<(MassObject massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, double t, ref double minRoot, ref int? obj1Index,
+        private static bool GetNextCollision(double t2, List<(MassEllipse massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, double t, ref double minRoot, ref int? obj1Index,
             ref int? obj2Index)
         {
             // minRoot is a ref param and can't be used in anonymous lambda functions :/
             var tmpMinRoot = t2;
             for (var i = 0; i < objects.Count; i++)
             {
-                var (_, ((_, x1), (_, y1))) = objects[i];
+                var (ellipse1, ((_, x1), (_, y1))) = objects[i];
                 for (var j = i + 1; j < objects.Count; j++)
                 {
-                    var (_, ((_, x2), (_, y2))) = objects[j];
+                    var (ellipse2, ((_, x2), (_, y2))) = objects[j];
 
                     var dx = x2 - x1;
                     var dy = y2 - y1;
 
-                    double r1 = 0.5, r2 = 0.5;
+                    double r1 = ellipse1.Radius, r2 = ellipse2.Radius;
                     var meetingPointsPol = (dx ^ 2) + (dy ^ 2) - System.Math.Pow(r1 + r2, 2);
                     var meetingPoints = FindRoots.Polynomial(meetingPointsPol.Coefficients).Where(r => r.IsReal()).Select(r => r.Real).Where(r => r.CompareTo(t, 5e-6) == 1 && r.CompareTo(tmpMinRoot, 5e-6) < 0);
                     

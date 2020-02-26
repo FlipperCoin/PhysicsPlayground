@@ -11,7 +11,7 @@
             <RowDefinition Height="0.9*"></RowDefinition>
             <RowDefinition Height="0.1*" ></RowDefinition>
         </Grid.RowDefinitions>
-        <Canvas Name="canvas" Grid.Row="0" Background="LightGray" ClipToBounds="True">
+        <Canvas Name="canvas" Grid.Row="0" Background="AliceBlue" ClipToBounds="True">
             <Canvas.RenderTransform>
                 <ScaleTransform x:Name="scaleTransform"></ScaleTransform>
             </Canvas.RenderTransform>

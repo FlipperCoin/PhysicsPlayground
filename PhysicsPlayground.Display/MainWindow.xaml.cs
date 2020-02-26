@@ -81,31 +81,51 @@ namespace PhysicsPlayground.Display
             _runningProgram = runtime;
             _timeProvider = runtime;
             var simulator = new ElasticCollisionSimulator(
-                new List<(MassObject, MovementParameters2)>()
+                new List<(MassEllipse, MovementParameters2)>()
                 {
-                    (new MassObject(10), new MovementParameters2()
+                    (new MassEllipse(15, 0.5), new MovementParameters2()
                     {
                         X=new InitialMovementParameters(0,10,-5,0),
-                        Y=new InitialMovementParameters(0,0,0,0)
+                        Y=new InitialMovementParameters(0,5,0,0)
                     }),
-                    (new MassObject(100), new MovementParameters2()
+                    (new MassEllipse(25, 0.7), new MovementParameters2()
                     {
-                        X=new InitialMovementParameters(0,0,5,0),
-                        Y=new InitialMovementParameters(0,0,0,0)
+                        X=new InitialMovementParameters(0,-3,2,0),
+                        Y=new InitialMovementParameters(0,-1,2,0)
+                    }),
+                    (new MassEllipse(60, 0.8), new MovementParameters2()
+                    {
+                        X=new InitialMovementParameters(0,2,-2,0),
+                        Y=new InitialMovementParameters(0,-4,1,0)
+                    }),
+                    (new MassEllipse(10, 0.6), new MovementParameters2()
+                    {
+                        X=new InitialMovementParameters(0,1,-3,0),
+                        Y=new InitialMovementParameters(0,1,-1,0)
+                    }),
+                    (new MassEllipse(30, 0.3), new MovementParameters2()
+                    {
+                        X=new InitialMovementParameters(0,-3,4,0),
+                        Y=new InitialMovementParameters(0,1,-4,0)
+                    }),
+                    (new MassEllipse(80, 0.6), new MovementParameters2()
+                    {
+                        X=new InitialMovementParameters(0,-10,5,0),
+                        Y=new InitialMovementParameters(0,5,0,0)
                     })
                 });
 
             startBtn.IsEnabled = false;
             stopBtn.IsEnabled = false;
             loadingLabel.Content = "Generating Simulation...";
-            ISimulation<IEnumerable<(double, double)>> simulation = await simulator.GenerateSimulationAsync(0, 20);
+            var simulation = await simulator.GenerateSimulationAsync(0, 20);
             startBtn.IsEnabled = true;
             stopBtn.IsEnabled = true;
             loadingLabel.Content = "Simulation Ready";
 
             _shapesProvider = ShapesProvider.CreateInstance(
-                new SimulationRunner(simulation, runtime),
-                new PointObjectsToEllipseAdapter(_screenParams, 0.5)
+                new SimulationRunner<IEnumerable<(MassEllipse, (double, double))>>(simulation, runtime),
+                new MassEllipseDisplayAdapter(_screenParams)
                 );
             _clock = new DispatcherTimer();
             _clock.Interval = TimeSpan.FromMilliseconds(_tick);
