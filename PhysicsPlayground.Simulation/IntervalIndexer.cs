@@ -1,25 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using MathNet.Numerics.Integration;
-using static System.Double;
 
 namespace PhysicsPlayground.Simulation
 {
-    public enum EndpointType
-    {
-        Unbounded,
-        Open,
-        Closed
-    }
-
-    public static class Endpoints
-    {
-        public static (double, EndpointType) Unbounded => (NaN, EndpointType.Unbounded);
-        public static (double, EndpointType) Open(double val) => (val, EndpointType.Open);
-        public static (double, EndpointType) Closed(double val) => (val, EndpointType.Closed);
-    }
-
     public class IntervalIndexer<T>
     {
         private List<(((double, EndpointType), (double, EndpointType)), Optional<T>)> _intervals;
@@ -97,7 +81,7 @@ namespace PhysicsPlayground.Simulation
 
                     var newIntervals = new List<(((double, EndpointType), (double, EndpointType)), Optional<T>)>();
                     newIntervals.AddRange(_intervals.Take(i));
-                    if ((curMin != minimum && !(IsNaN(curMin) && IsNaN(minimum))) || (curMinType == EndpointType.Closed && minimumType == EndpointType.Open))
+                    if ((curMin != minimum && !(Double.IsNaN(curMin) && Double.IsNaN(minimum))) || (curMinType == EndpointType.Closed && minimumType == EndpointType.Open))
                     {
                         newIntervals.Add(
                             (
@@ -107,7 +91,7 @@ namespace PhysicsPlayground.Simulation
                         );
                     }
                     newIntervals.Add((interval,value));
-                    if ((curMax != maximum && !(IsNaN(curMax) && IsNaN(maximum))) || (curMaxType == EndpointType.Closed && maximumType == EndpointType.Open))
+                    if ((curMax != maximum && !(Double.IsNaN(curMax) && Double.IsNaN(maximum))) || (curMaxType == EndpointType.Closed && maximumType == EndpointType.Open))
                     {
                         newIntervals.Add(
                             (
@@ -147,136 +131,5 @@ namespace PhysicsPlayground.Simulation
 
             return below;
         }
-    }
-
-    class GenericEndpointIntervalIndexer<T> : IIntervalIndexer<T> where T : class 
-    {
-        private readonly List<(IntervalEndpointBase, T)> _endpoints;
-
-        public GenericEndpointIntervalIndexer()
-        {
-            _endpoints = new List<(IntervalEndpointBase, T)>
-            {
-                (new UnboundedEndpointBase(true), null)
-            };
-        }
-
-        public T this[double t]
-        {
-            get
-            {
-                foreach (var (endpoint, returnValue) in _endpoints)
-                {
-                    if (endpoint.InRangeBelow(t)) return returnValue;
-                }
-
-                return null;
-            }
-        }
-
-        public void AddInterval(Interval interval, T value)
-        {
-        }
-    }
-
-    internal interface IIntervalIndexer<T>
-    {
-        T this[double t] { get; }
-        void AddInterval(Interval interval, T value);
-    }
-
-    abstract class IntervalEndpointBase
-    {
-        public abstract bool InRangeBelow(double t);
-        public abstract bool InRangeAbove(double t);
-        public abstract bool Smaller(double t);
-        public abstract bool Larger(double t);
-        public abstract bool Equals(double t);
-        public static bool operator <(double t, IntervalEndpointBase e) => e.Larger(t);
-        public static bool operator <=(double t, IntervalEndpointBase e) => t < e || e.Equals(t);
-
-        public static bool operator >(double t, IntervalEndpointBase e) => e.Smaller(t);
-        public static bool operator >=(double t, IntervalEndpointBase e) => t < e || e.Equals(t);
-        public static bool operator <(IntervalEndpointBase e, double t) => t > e;
-        public static bool operator <=(IntervalEndpointBase e, double t) => t >= e;
-
-        public static bool operator >(IntervalEndpointBase e, double t) => t < e;
-        public static bool operator >=(IntervalEndpointBase e, double t) => t <= e;
-        //public static bool operator <(IntervalEndpointBase e1, IntervalEndpointBase e2) => t > e;
-        //public static bool operator <=(IntervalEndpointBase e1, IntervalEndpointBase e2) => t >= e;
-
-        //public static bool operator >(IntervalEndpointBase e1, IntervalEndpointBase e2) => t < e;
-        //public static bool operator >=(IntervalEndpointBase e1, IntervalEndpointBase e2) => t <= e;
-    }
-
-    class BoundedEndpointBase : IntervalEndpointBase
-    {
-        public double Value { get; }
-
-        public BoundedEndpointType Type { get; }
-
-        public BoundedEndpointBase(double value, BoundedEndpointType type)
-        {
-            Value = value;
-            Type = type;
-        }
-
-        public override bool InRangeBelow(double t)
-        {
-            return Type switch
-            {
-                BoundedEndpointType.Open => t < this,
-                BoundedEndpointType.Closed => t <= this,
-                _ => throw new Exception()
-            };
-        }
-
-        public override bool InRangeAbove(double t)
-        {
-            return Type switch
-            {
-                BoundedEndpointType.Open => t > this,
-                BoundedEndpointType.Closed => t >= this,
-                _ => throw new Exception()
-            };
-        }
-
-        public override bool Smaller(double t) => t < Value;
-
-        public override bool Larger(double t) => t > Value;
-
-        public override bool Equals(double t) => t == Value;
-    }
-
-    internal enum BoundedEndpointType
-    {
-        Open,
-        Closed
-    }
-
-    class UnboundedEndpointBase : IntervalEndpointBase
-    {
-        public bool Sign { get; }
-
-        public UnboundedEndpointBase(bool sign)
-        {
-            Sign = sign;
-        }
-
-        public override bool InRangeBelow(double t) => t < this;
-
-        public override bool InRangeAbove(double t) => t > this;
-
-        public override bool Smaller(double t)
-        {
-            return !Sign;
-        }
-
-        public override bool Larger(double t)
-        {
-            return Sign;
-        }
-
-        public override bool Equals(double t) => false;
     }
 }

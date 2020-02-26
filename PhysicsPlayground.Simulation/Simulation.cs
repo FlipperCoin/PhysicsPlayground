@@ -12,7 +12,7 @@ namespace PhysicsPlayground.Simulation
             _movementEquations = movementEquations;
         }
 
-        public IEnumerable<(double, double)> GetCoordinates(double t) =>
+        public IEnumerable<(double, double)> GetMomentInTime(double t) =>
             _movementEquations.Select(equation => equation.GetLocationInTime(t));
     }
 }

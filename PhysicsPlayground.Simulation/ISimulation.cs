@@ -2,8 +2,12 @@
 
 namespace PhysicsPlayground.Simulation
 {
-    public interface ISimulation
+    public interface ISimulation<T>
     {
-        IEnumerable<(double, double)> GetCoordinates(double t);
+        T GetMomentInTime(double t);
+    }
+
+    public interface ISimulation : ISimulation<IEnumerable<(double, double)>>
+    {
     }
 }

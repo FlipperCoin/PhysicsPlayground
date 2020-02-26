@@ -2,20 +2,32 @@
 
 namespace PhysicsPlayground.Simulation
 {
-    public class SimulationRunner : IObjectsStateProvider
+    public class SimulationRunner<T> : IObjectProvider<T>
     {
-        private readonly ISimulation _simulation;
+        private readonly ISimulation<T> _simulation;
         private readonly ITimeProvider _timeProvider;
 
-        public SimulationRunner(ISimulation simulation, ITimeProvider timeProvider)
+        public SimulationRunner(ISimulation<T> simulation, ITimeProvider timeProvider)
         {
             _simulation = simulation;
             _timeProvider = timeProvider;
         }
 
-        public IEnumerable<(double x, double y)> GetCoordinates()
+        public T GetMoment()
         {
-            return _simulation.GetCoordinates(_timeProvider.Time.TotalSeconds);
+            return _simulation.GetMomentInTime(_timeProvider.Time.TotalSeconds);
+        }
+
+        public T GetObject()
+        {
+            return GetMoment();
+        }
+    }
+
+    public class SimulationRunner : SimulationRunner<IEnumerable<(double, double)>>
+    {
+        public SimulationRunner(ISimulation<IEnumerable<(double, double)>> simulation, ITimeProvider timeProvider) : base(simulation, timeProvider)
+        {
         }
     }
 }

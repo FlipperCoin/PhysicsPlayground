@@ -16,7 +16,7 @@ namespace PhysicsPlayground.Simulation.Simulators
             _objectsAndMovementParameters = objectsAndMovementParameters;
         }
 
-        public override ISimulation GenerateSimulation(double t1, double t2)
+        public override ISimulation<IEnumerable<(double,double)>> GenerateSimulation(double t1, double t2)
         {
             IEnumerable<MovementEquation> movementEquations = _objectsAndMovementParameters
                 .Select(obj =>

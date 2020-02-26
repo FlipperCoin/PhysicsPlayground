@@ -13,7 +13,6 @@ using MathNet.Spatial.Euclidean;
 using MathNet.Spatial.Units;
 using Serilog;
 using Polynomial = PhysicsPlayground.Math.Polynomial;
-using Vector = MathNet.Numerics.LinearAlgebra.Double.Vector;
 
 namespace PhysicsPlayground.Simulation.Simulators
 {
@@ -27,7 +26,7 @@ namespace PhysicsPlayground.Simulation.Simulators
             _objectsAndMovementParameters = objectsAndMovementParameters.ToList();
         }
 
-        public override ISimulation GenerateSimulation(double t1, double t2)
+        public override ISimulation<IEnumerable<(double, double)>> GenerateSimulation(double t1, double t2)
         {
             _logger.Information(
                 "Generating elastic collision simulation starting {t1} ending {t2}", 

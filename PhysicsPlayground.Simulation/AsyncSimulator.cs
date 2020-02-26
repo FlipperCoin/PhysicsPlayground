@@ -1,13 +1,18 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PhysicsPlayground.Simulation
 {
-    public abstract class AsyncSimulator : ISimulator
+    public abstract class AsyncSimulator<T> : ISimulator<T>
     {
-        public abstract Task<ISimulation> GenerateSimulationAsync(double t1, double t2);
+        public abstract Task<ISimulation<T>> GenerateSimulationAsync(double t1, double t2);
 
-        ISimulation ISimulator.GenerateSimulation(double t1, double t2) =>
+        public ISimulation<T> GenerateSimulation(double t1, double t2) =>
             GenerateSimulationAsync(t1, t2).Result;
+
+    }
+    public abstract class AsyncSimulator : AsyncSimulator<IEnumerable<(double, double)>>
+    {
 
     }
 }
