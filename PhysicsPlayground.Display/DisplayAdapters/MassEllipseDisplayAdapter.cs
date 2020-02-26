@@ -26,7 +26,10 @@ namespace PhysicsPlayground.Display
                 Ellipse ball = new Ellipse();
                 ball.Height = 2 * (massEllipse.Radius * _screenParams.PixelsPerMeter);
                 ball.Width = 2 * (massEllipse.Radius * _screenParams.PixelsPerMeter);
-                ball.Fill = new SolidColorBrush(MassToColor(massEllipse.Mass));
+                var brush = new SolidColorBrush(MassToColor(massEllipse.Mass));
+                ball.Fill = brush;
+                ball.Stroke = brush;
+                ball.StrokeThickness = 1;
 
                 Canvas.SetLeft(ball, (_screenParams.XCenter + x * _screenParams.PixelsPerMeter) - _screenParams.PixelsPerMeter * massEllipse.Radius);
                 Canvas.SetTop(ball, (_screenParams.YCenter - y * _screenParams.PixelsPerMeter) - _screenParams.PixelsPerMeter * massEllipse.Radius);

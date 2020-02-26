@@ -98,15 +98,15 @@ namespace PhysicsPlayground.Display
                         X=new InitialMovementParameters(0,2,-2,0),
                         Y=new InitialMovementParameters(0,-4,1,0)
                     }),
-                    (new MassEllipse(10, 0.6), new MovementParameters2()
+                    (new MassEllipse(30, 0.6), new MovementParameters2()
                     {
-                        X=new InitialMovementParameters(0,1,-3,0),
-                        Y=new InitialMovementParameters(0,1,-1,0)
+                        X=new InitialMovementParameters(0,2,-3,0),
+                        Y=new InitialMovementParameters(0,2,-1,0)
                     }),
-                    (new MassEllipse(30, 0.3), new MovementParameters2()
+                    (new MassEllipse(10, 0.3), new MovementParameters2()
                     {
-                        X=new InitialMovementParameters(0,-3,4,0),
-                        Y=new InitialMovementParameters(0,1,-4,0)
+                        X=new InitialMovementParameters(0,-12,4,0),
+                        Y=new InitialMovementParameters(0,4,-4,0)
                     }),
                     (new MassEllipse(80, 0.6), new MovementParameters2()
                     {
