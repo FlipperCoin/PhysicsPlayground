@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using System.Windows.Shapes;
 
-namespace PhysicsPlayground.Display
+namespace PhysicsPlayground.Display.DisplayAdapters
 {
     internal interface IDisplayAdapter<T>
     {

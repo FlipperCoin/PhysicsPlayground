@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using PhysicsPlayground.Display.DisplayAdapters;
 using PhysicsPlayground.Simulation;
 using PhysicsPlayground.Simulation.Simulators;
 using Serilog;
@@ -80,7 +81,7 @@ namespace PhysicsPlayground.Display
             var runtime = new RunTime();
             _runningProgram = runtime;
             _timeProvider = runtime;
-            var simulator = new ElasticCollisionSimulator(
+            var simulator = new ElasticCollisionSimulator(new Box() { X1 = -6, X2 = 6, Y1 = -5, Y2 = 5 },
                 new List<(MassEllipse, MovementParameters2)>()
                 {
                     (new MassEllipse(15, 0.5), new MovementParameters2()

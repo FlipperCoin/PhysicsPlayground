@@ -30,11 +30,13 @@ namespace PhysicsPlayground.Simulation.Simulators
 
     public class ElasticCollisionSimulator : SyncSimulator<IEnumerable<(MassEllipse, (double, double))>>
     {
+        private readonly Box _box;
         private readonly IList<(MassEllipse, MovementParameters2)> _objectsAndMovementParameters;
         private readonly ILogger _logger = Log.Logger.ForContext<ElasticCollisionSimulator>();
 
-        public ElasticCollisionSimulator(IEnumerable<(MassEllipse, MovementParameters2)> objectsAndMovementParameters)
+        public ElasticCollisionSimulator(Box box, IEnumerable<(MassEllipse, MovementParameters2)> objectsAndMovementParameters)
         {
+            _box = box;
             _objectsAndMovementParameters = objectsAndMovementParameters.ToList();
         }
 
@@ -63,21 +65,134 @@ namespace PhysicsPlayground.Simulation.Simulators
             while (t < t2)
             {
                 var minRoot = t2;
-                int? obj1Index = default, obj2Index = default;
+                var minWallRoot = t2;
+                int? obj1Index = default, obj2Index = default, objIndex = default;
+                Wall wall = Wall.Left;
 
-                if (!GetNextCollision(t2, objects, t, ref minRoot, ref obj1Index, ref obj2Index)) break;
+                var gotCollision = GetNextCollision(t2, objects, t, ref minRoot, ref obj1Index, ref obj2Index);
+                var gotWallCollision = GetNextWallCollision(t, t2, objects, ref minWallRoot, ref objIndex, ref wall);
 
-                _logger.Debug("Collision on {t} between {obj1Index} and {obj2Index}",minRoot,obj1Index,obj2Index);
+                if (!gotCollision && !gotWallCollision) break;
 
-                UpdateMovementEquations(objects, obj1Index, obj2Index, minRoot);
+                if (gotCollision)
+                {
+                    if (!gotWallCollision)
+                    {
+                        OnCollision(objects, obj1Index, obj2Index, minRoot);
 
-                t = minRoot;
+                        t = minRoot;
+                        continue;
+                    }
+
+                    if (minWallRoot < minRoot) OnWallCollision(objects, objIndex.Value, wall, minWallRoot);
+                    else OnCollision(objects, obj1Index, obj2Index, minRoot);
+
+                    t = System.Math.Min(minRoot, minWallRoot);
+                    continue;
+                }
+
+                OnWallCollision(objects, objIndex.Value, wall, minWallRoot);
+
+                t = minWallRoot;
             }
 
             _logger.Information("Finished elastic collision simulation");
 
             return new PlaneMovementSimulation<MassEllipse>(objects.Select(obj =>
                 (obj.massObj, new MovementEquation(obj.Item2.Item1.xEquations, obj.Item2.Item2.yEquations))).ToList());
+        }
+
+        private void OnWallCollision(List<(MassEllipse massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, int objIndex, Wall wall, double minWallRoot)
+        {
+            _logger.Debug("Collision with wall on {t} between {objIndex} and wall '{wall}'", minWallRoot, objIndex, Enum.GetName(typeof(Wall),wall));
+
+            var (ellipse, ((xEquations, x), (yEquations, y))) = objects[objIndex];
+            var interval = (Endpoints.Closed(minWallRoot), Endpoints.Unbounded);
+
+            switch (wall)
+            {
+                case Wall.Left:
+                case Wall.Right:
+                    x = MovementEquation.GetPolynomialMovementEquation(
+                        x.Derivative().Derivative().Evaluate(minWallRoot),
+                        -x.Derivative().Evaluate(minWallRoot),
+                        x.Evaluate(minWallRoot),
+                        minWallRoot
+                    );
+                    xEquations.AddInterval(interval, x);
+                    break;
+                case Wall.Up:
+                case Wall.Down:
+                    y = MovementEquation.GetPolynomialMovementEquation(
+                        y.Derivative().Derivative().Evaluate(minWallRoot),
+                        -y.Derivative().Evaluate(minWallRoot),
+                        y.Evaluate(minWallRoot),
+                        minWallRoot
+                    );
+                    yEquations.AddInterval(interval, y);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(wall), wall, null);
+            }
+
+            objects[objIndex] = (ellipse, ((xEquations, x), (yEquations, y)));
+        }
+
+        private void OnCollision(List<(MassEllipse massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, int? obj1Index, int? obj2Index, double minRoot)
+        {
+            _logger.Debug("Collision on {t} between {objIndex} and {obj2Index}", minRoot, obj1Index, obj2Index);
+
+            UpdateMovementEquations(objects, obj1Index, obj2Index, minRoot);
+        }
+
+        private bool GetNextWallCollision(double t1, double t2, List<(MassEllipse massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, ref double minWallRoot, ref int? obj1Index, ref Wall wallIndex)
+        {
+            var tmpMinRoot = t2;
+
+            for (var i = 0; i < objects.Count; i++)
+            {
+                var (ellipse, ((_, x), (_, y))) = objects[i];
+
+                var xLeftHits = (x - ellipse.Radius).Roots(_box.MinX)
+                    .Where(InTimespanPredicate(t1, tmpMinRoot));
+                if (xLeftHits.Any())
+                {
+                    tmpMinRoot = xLeftHits.Min();
+                    wallIndex = Wall.Left;
+                }
+                
+                var xRightHits = (x + ellipse.Radius).Roots(_box.MaxX)
+                    .Where(InTimespanPredicate(t1, tmpMinRoot));
+                if (xRightHits.Any())
+                {
+                    tmpMinRoot = xRightHits.Min();
+                    wallIndex = Wall.Right;
+                }
+
+                var yUpHits = (y - ellipse.Radius).Roots(_box.MinY)
+                    .Where(InTimespanPredicate(t1, tmpMinRoot));
+                if (yUpHits.Any())
+                {
+                    tmpMinRoot = yUpHits.Min();
+                    wallIndex = Wall.Up;
+
+                }
+
+                var yDownHits = (y + ellipse.Radius).Roots(_box.MaxY)
+                    .Where(InTimespanPredicate(t1, tmpMinRoot));
+                if (yDownHits.Any())
+                {
+                    tmpMinRoot = yDownHits.Min();
+                    wallIndex = Wall.Down;
+                }
+
+                if (xLeftHits.Concat(yUpHits).Concat(xRightHits).Concat(yDownHits).Any()) obj1Index = i;
+            }
+
+            if (!obj1Index.HasValue) return false;
+            
+            minWallRoot = tmpMinRoot;
+            return true;
         }
 
         private void UpdateMovementEquations(List<(MassEllipse massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, int? obj1Index, int? obj2Index, double t)
@@ -172,7 +287,7 @@ namespace PhysicsPlayground.Simulation.Simulators
             objects[obj2Index.Value] = (massObj2, ((xEquations2, newX2), (yEquations2, newY2)));
         }
 
-        private static bool GetNextCollision(double t2, List<(MassEllipse massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, double t, ref double minRoot, ref int? obj1Index,
+        private bool GetNextCollision(double t2, List<(MassEllipse massObj, ((IntervalIndexer<Polynomial> xEquations, Polynomial xPol), (IntervalIndexer<Polynomial> yEquations, Polynomial yPol)))> objects, double t, ref double minRoot, ref int? obj1Index,
             ref int? obj2Index)
         {
             // minRoot is a ref param and can't be used in anonymous lambda functions :/
@@ -180,6 +295,7 @@ namespace PhysicsPlayground.Simulation.Simulators
             for (var i = 0; i < objects.Count; i++)
             {
                 var (ellipse1, ((_, x1), (_, y1))) = objects[i];
+
                 for (var j = i + 1; j < objects.Count; j++)
                 {
                     var (ellipse2, ((_, x2), (_, y2))) = objects[j];
@@ -203,5 +319,18 @@ namespace PhysicsPlayground.Simulation.Simulators
             minRoot = tmpMinRoot;
             return obj1Index.HasValue;
         }
+
+        private static Func<double, bool> InTimespanPredicate(double t, double tmpMinRoot)
+        {
+            return r => r.CompareTo(t, 5e-6) == 1 && r.CompareTo(tmpMinRoot, 5e-6) < 0;
+        }
+    }
+
+    internal enum Wall
+    {
+        Left,
+        Up,
+        Right,
+        Down
     }
 }

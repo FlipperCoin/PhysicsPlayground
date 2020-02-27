@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using PhysicsPlayground.Simulation.Simulators;
 
-namespace PhysicsPlayground.Display
+namespace PhysicsPlayground.Display.DisplayAdapters
 {
     internal class MassEllipseDisplayAdapter : IDisplayAdapter<IEnumerable<(MassEllipse, (double, double))>>
     {
