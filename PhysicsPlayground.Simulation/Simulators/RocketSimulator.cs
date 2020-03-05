@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PhysicsPlayground.Simulation.Simulators
 {
-    class RocketSimulator : SyncSimulator<RocketSimulationMoment>
+    public class RocketSimulator : SyncSimulator<RocketSimulationMoment>
     {
         private readonly double _baseMass;
         private readonly double _fuelMass;
@@ -38,9 +38,9 @@ namespace PhysicsPlayground.Simulation.Simulators
                 (t) => RocketVEquation(burnTime, t1));
 
             var x = new IntervalIndexer<Func<double, double>>();
-            xv.AddInterval((Endpoints.Closed(t1), Endpoints.Closed(burnTime)),
+            x.AddInterval((Endpoints.Closed(t1), Endpoints.Closed(burnTime)),
                 (t) => RocketXEquation(t, t1));
-            xv.AddInterval((Endpoints.Open(burnTime), Endpoints.Unbounded),
+            x.AddInterval((Endpoints.Open(burnTime), Endpoints.Unbounded),
                 (t) => RocketXEquation(burnTime, t1) + RocketVEquation(burnTime, t1) * (t - burnTime));
 
             return new RocketSimulation(_baseMass, _fuelMass, _massLossRate, burnTime, xa, xv, x);
@@ -48,7 +48,7 @@ namespace PhysicsPlayground.Simulation.Simulators
 
         private double RocketAEquation(double t, double t0)
         {
-            return ((_massLossRate * _exhaustV) / (_baseMass + _fuelMass)) /
+            return ((-_massLossRate * _exhaustV) / (_baseMass + _fuelMass)) /
                    ((1 - _massLossRate * (t - t0)) / (_baseMass + _fuelMass));
         }
 
@@ -74,38 +74,38 @@ namespace PhysicsPlayground.Simulation.Simulators
         private readonly double _fuelMass;
         private readonly double _changeOfMassRate;
         private readonly double _burnTime;
-        private readonly IntervalIndexer<Func<double, double>> _xa;
-        private readonly IntervalIndexer<Func<double, double>> _xv;
-        private readonly IntervalIndexer<Func<double, double>> _x;
+        private readonly IntervalIndexer<Func<double, double>> _ya;
+        private readonly IntervalIndexer<Func<double, double>> _yv;
+        private readonly IntervalIndexer<Func<double, double>> _y;
 
         public RocketSimulation(double baseMass,double fuelMass, double changeOfMassRate, double burnTime,
-            IntervalIndexer<Func<double, double>> xa, IntervalIndexer<Func<double,double>> xv, IntervalIndexer<Func<double, double>> x)
+            IntervalIndexer<Func<double, double>> ya, IntervalIndexer<Func<double,double>> yv, IntervalIndexer<Func<double, double>> y)
         {
             _baseMass = baseMass;
             _fuelMass = fuelMass;
             _changeOfMassRate = changeOfMassRate;
             _burnTime = burnTime;
-            _xa = xa;
-            _xv = xv;
-            _x = x;
+            _ya = ya;
+            _yv = yv;
+            _y = y;
         }
 
         public RocketSimulationMoment GetMomentInTime(double t)
         {
             return new RocketSimulationMoment
             {
-                X = new AxisMovementParameters
+                Y = new AxisMovementParameters
                 {
-                    A = _xa[t].Value.Invoke(t),
-                    V = _xv[t].Value.Invoke(t),
-                    D = _x[t].Value.Invoke(t),
+                    A = _ya[t].Value.Invoke(t),
+                    V = _yv[t].Value.Invoke(t),
+                    D = _y[t].Value.Invoke(t),
                 }
             };
         }
     }
 
-    internal class RocketSimulationMoment
+    public class RocketSimulationMoment
     {
-        public AxisMovementParameters X { get; set; }
+        public AxisMovementParameters Y { get; set; }
     }
 }

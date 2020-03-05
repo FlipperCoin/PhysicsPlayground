@@ -184,6 +184,26 @@ namespace PhysicsPlayground.Display
                         );
 
                         return (shapesProvider, metadataProvider);
+                    }),
+                    ("Rocket", async () =>
+                    {
+                        var simulator = new RocketSimulator(10, 90, 1, 100, 0);
+
+                        var simulation = await simulator.GenerateSimulationAsync(0, 200);
+
+                        var simulationRunner =
+                            new SimulationRunner<RocketSimulationMoment>(simulation, runtime);
+
+                        var shapesProvider = ShapesProvider.CreateInstance(
+                            simulationRunner,
+                            new RocketDisplayAdapter(_screenParams)
+                        );
+                        var metadataProvider = MetadataProvider.CreateInstance(
+                            simulationRunner,
+                            new JsonSerializerMetadataProvider<RocketSimulationMoment>()
+                        );
+
+                        return (shapesProvider, metadataProvider);
                     })
                 };
 
@@ -396,6 +416,29 @@ namespace PhysicsPlayground.Display
             startBtn.IsEnabled = true;
             stopBtn.IsEnabled = true;
             loadingLabel.Content = "Simulation Ready";
+        }
+    }
+
+    internal class RocketDisplayAdapter : IDisplayAdapter<RocketSimulationMoment>
+    {
+        private readonly IScreenParametersProvider _screenParams;
+
+        public RocketDisplayAdapter(IScreenParametersProvider screenParams)
+        {
+            _screenParams = screenParams;
+        }
+
+        public IEnumerable<Shape> GetDrawables(RocketSimulationMoment adaptable)
+        {
+            var rocket = new Rectangle();
+            rocket.Width = 1 * _screenParams.PixelsPerMeter;
+            rocket.Height = 10 * _screenParams.PixelsPerMeter;
+            rocket.Fill = new SolidColorBrush(Colors.Black);
+            
+            Canvas.SetTop(rocket, (_screenParams.YCenter - 10 * _screenParams.PixelsPerMeter) - adaptable.Y.D * _screenParams.PixelsPerMeter);
+            Canvas.SetLeft(rocket, _screenParams.XCenter - 0.5 * _screenParams.PixelsPerMeter);
+
+            return Enumerable.Repeat(rocket, 1);
         }
     }
 
