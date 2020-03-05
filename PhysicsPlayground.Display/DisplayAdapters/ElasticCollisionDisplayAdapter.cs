@@ -19,7 +19,8 @@ namespace PhysicsPlayground.Display.DisplayAdapters
 
         public IEnumerable<Shape> GetDrawables(ElasticCollisionMoment adaptable)
         {
-            return adaptable.Balls.Select(ellipseInPlane =>
+            var (box, balls) = (adaptable.EllasticCollisionMetadata.Box, adaptable.Balls);
+            List<Shape> shapes = adaptable.Balls.Select(ellipseInPlane =>
             {
                 var (massEllipse, (x, y)) = 
                     (ellipseInPlane.Item1, 
@@ -39,7 +40,20 @@ namespace PhysicsPlayground.Display.DisplayAdapters
                 Canvas.SetTop(ball, (_screenParams.YCenter - y * _screenParams.PixelsPerMeter) - _screenParams.PixelsPerMeter * massEllipse.Radius);
 
                 return ball;
-            });
+            }).Cast<Shape>().ToList();
+
+            var boxShape = new Rectangle();
+            boxShape.Width = (box.X2 - box.X1) * _screenParams.PixelsPerMeter;
+            boxShape.Height = (box.Y2 - box.Y1) * _screenParams.PixelsPerMeter;
+            boxShape.Stroke = new SolidColorBrush(Colors.Black);
+            boxShape.StrokeThickness = 3;
+
+            Canvas.SetLeft(boxShape, (_screenParams.XCenter + box.X1 * _screenParams.PixelsPerMeter));
+            Canvas.SetTop(boxShape, _screenParams.YCenter + box.Y1 * _screenParams.PixelsPerMeter);
+
+            shapes.Add(boxShape);
+
+            return shapes;
         }
 
         private Color MassToColor(double mass)

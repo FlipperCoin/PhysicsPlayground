@@ -24,7 +24,7 @@
             <Grid Grid.Column="0">
                 <Border BorderThickness="0 0 1 0" BorderBrush="Black">
                     <StackPanel>
-                        <ListBox>
+                        <ListBox Name="simulatorList" SelectionChanged="SimulatorList_OnSelectionChanged" SelectedIndex="0">
 
                         </ListBox>
                     </StackPanel>

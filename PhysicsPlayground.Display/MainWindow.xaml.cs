@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -34,6 +37,10 @@ namespace PhysicsPlayground.Display
         private ShapesProvider _shapesProvider;
         private MetadataProvider _metadataProvider;
         private IScreenParametersProvider _screenParams;
+
+        private List<(string name, Func<Task<(ShapesProvider shapesProvider, MetadataProvider metadataProvider)>> simulator)>
+            _simulators;
+            
         
         public double PixelsPerMeter => _screenParams.PixelsPerMeter;
 
@@ -51,7 +58,7 @@ namespace PhysicsPlayground.Display
             Loaded += (sender, args) => Initialize();
         }
 
-        private async void Initialize()
+        private void Initialize()
         {
             double pixelsPerMeterBase;
             if (_xMeters != 0)
@@ -78,60 +85,69 @@ namespace PhysicsPlayground.Display
             var runtime = new RunTime();
             _runningProgram = runtime;
             _timeProvider = runtime;
-            var simulator = new ElasticCollisionSimulator(new Box() { X1 = -6, X2 = 6, Y1 = -2, Y2 = 2 },
-                new List<(MassEllipse, MovementParameters2)>()
-                {
-                    (new MassEllipse(15, 0.5), new MovementParameters2()
-                    {
-                        X=new InitialMovementParameters(0,10,-5,0),
-                        Y=new InitialMovementParameters(0,5,0,0)
-                    }),
-                    (new MassEllipse(25, 0.7), new MovementParameters2()
-                    {
-                        X=new InitialMovementParameters(0,-3,2,0),
-                        Y=new InitialMovementParameters(0,-1,2,0)
-                    }),
-                    (new MassEllipse(60, 0.8), new MovementParameters2()
-                    {
-                        X=new InitialMovementParameters(0,2,-2,0),
-                        Y=new InitialMovementParameters(0,-4,1,0)
-                    }),
-                    (new MassEllipse(30, 0.6), new MovementParameters2()
-                    {
-                        X=new InitialMovementParameters(0,2,-3,0),
-                        Y=new InitialMovementParameters(0,2,-1,0)
-                    }),
-                    (new MassEllipse(10, 0.3), new MovementParameters2()
-                    {
-                        X=new InitialMovementParameters(0,-12,1.5,0),
-                        Y=new InitialMovementParameters(0,4,-1.5,0)
-                    }),
-                    (new MassEllipse(80, 0.6), new MovementParameters2()
-                    {
-                        X=new InitialMovementParameters(0,-10,5,0),
-                        Y=new InitialMovementParameters(0,5,0,0)
-                    })
-                });
 
+            _simulators =
+                new List<(string name, Func<Task<(ShapesProvider shapesProvider, MetadataProvider metadataProvider)>>)>
+                {
+                    ("Elastic Collision", async () =>
+                    {
+                        var simulator = new ElasticCollisionSimulator(new Box() { X1 = -6, X2 = 6, Y1 = -2, Y2 = 2 },
+                            new List<(MassEllipse, MovementParameters2)>()
+                            {
+                                (new MassEllipse(15, 0.5), new MovementParameters2()
+                                {
+                                    X=new InitialMovementParameters(0,10,-5,0),
+                                    Y=new InitialMovementParameters(0,5,0,0)
+                                }),
+                                (new MassEllipse(25, 0.7), new MovementParameters2()
+                                {
+                                    X=new InitialMovementParameters(0,-3,2,0),
+                                    Y=new InitialMovementParameters(0,-1,1.2,0)
+                                }),
+                                (new MassEllipse(60, 0.8), new MovementParameters2()
+                                {
+                                    X=new InitialMovementParameters(0,2,-2,0),
+                                    Y=new InitialMovementParameters(0,-4,1,0)
+                                }),
+                                (new MassEllipse(30, 0.6), new MovementParameters2()
+                                {
+                                    X=new InitialMovementParameters(0,2,-3,0),
+                                    Y=new InitialMovementParameters(0,2,-1,0)
+                                }),
+                                (new MassEllipse(10, 0.3), new MovementParameters2()
+                                {
+                                    X=new InitialMovementParameters(0,-12,1.5,0),
+                                    Y=new InitialMovementParameters(0,4,-1.5,0)
+                                }),
+                                (new MassEllipse(80, 0.6), new MovementParameters2()
+                                {
+                                    X=new InitialMovementParameters(0,-10,5,0),
+                                    Y=new InitialMovementParameters(0,5,0,0)
+                                })
+                            });
+
+                        var simulation = await simulator.GenerateSimulationAsync(0, 20);
+
+                        var simulationRunner =
+                            new SimulationRunner<ElasticCollisionMoment>(simulation, runtime);
+
+                        var shapesProvider = ShapesProvider.CreateInstance(
+                            simulationRunner,
+                            new ElasticCollisionDisplayAdapter(_screenParams)
+                        );
+                        var metadataProvider = MetadataProvider.CreateInstance(
+                            simulationRunner,
+                            new JsonSerializerMetadataProvider<ElasticCollisionMoment>()
+                        );
+
+                        return (shapesProvider, metadataProvider);
+                    })
+                };
+
+            simulatorList.ItemsSource = _simulators.Select(s => s.name);
             startBtn.IsEnabled = false;
             stopBtn.IsEnabled = false;
-            loadingLabel.Content = "Generating Simulation...";
-            var simulation = await simulator.GenerateSimulationAsync(0, 20);
-            startBtn.IsEnabled = true;
-            stopBtn.IsEnabled = true;
-            loadingLabel.Content = "Simulation Ready";
 
-            var simulationRunner =
-                new SimulationRunner<ElasticCollisionMoment>(simulation, runtime);
-
-            _shapesProvider = ShapesProvider.CreateInstance(
-                simulationRunner,
-                new ElasticCollisionDisplayAdapter(_screenParams)
-                );
-            _metadataProvider = MetadataProvider.CreateInstance(
-                simulationRunner,
-                new JsonSerializerMetadataProvider<ElasticCollisionMoment>()
-                );
             _clock = new DispatcherTimer();
             _clock.Interval = TimeSpan.FromMilliseconds(_tick);
             _clock.Tick += (o, e) => OnClock();
@@ -190,7 +206,8 @@ namespace PhysicsPlayground.Display
         private void UpdateGraphics()
         {
             timerLabel.Content = _timeProvider.Time.ToString(@"hh\:mm\:ss\:ff");
-            metadataText.Text = _metadataProvider.Metadata;
+
+            if (_metadataProvider != null) metadataText.Text = _metadataProvider.Metadata;
 
             DrawScale();
             DrawObjectsGrid();
@@ -291,6 +308,8 @@ namespace PhysicsPlayground.Display
             _dynamicItems.ForEach(element => canvas.Children.Remove(element));
             _dynamicItems.Clear();
 
+            if (_shapesProvider == null) return;
+
             foreach (var shape in _shapesProvider.Shapes)
             {
                 _dynamicItems.Add(shape);
@@ -320,6 +339,18 @@ namespace PhysicsPlayground.Display
         private void ZoomBar_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (_screenParams != null) _screenParams.Zoom = e.NewValue;
+        }
+
+        private async void SimulatorList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            loadingLabel.Content = "Generating Simulation...";
+
+            var (name, simulator )= _simulators[simulatorList.SelectedIndex];
+            (_shapesProvider, _metadataProvider) = await simulator();
+
+            startBtn.IsEnabled = true;
+            stopBtn.IsEnabled = true;
+            loadingLabel.Content = "Simulation Ready";
         }
     }
 
