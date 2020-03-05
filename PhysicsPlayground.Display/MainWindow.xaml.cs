@@ -126,7 +126,50 @@ namespace PhysicsPlayground.Display
                                 })
                             });
 
-                        var simulation = await simulator.GenerateSimulationAsync(0, 20);
+                        var simulation = await simulator.GenerateSimulationAsync(0, 60);
+
+                        var simulationRunner =
+                            new SimulationRunner<ElasticCollisionMoment>(simulation, runtime);
+
+                        var shapesProvider = ShapesProvider.CreateInstance(
+                            simulationRunner,
+                            new ElasticCollisionDisplayAdapter(_screenParams)
+                        );
+                        var metadataProvider = MetadataProvider.CreateInstance(
+                            simulationRunner,
+                            new JsonSerializerMetadataProvider<ElasticCollisionMoment>()
+                        );
+
+                        return (shapesProvider, metadataProvider);
+                    }),
+                    ("Elastic Collision 2", async () =>
+                    {
+                        var simulator = new ElasticCollisionSimulator(new Box() { X1 = -6, X2 = 6, Y1 = -2, Y2 = 2 },
+                            new List<(MassEllipse, MovementParameters2)>()
+                            {
+                                (new MassEllipse(15, 0.5), new MovementParameters2()
+                                {
+                                    X=new InitialMovementParameters(0,10,-5,0),
+                                    Y=new InitialMovementParameters(0,5,0,0)
+                                }),
+                                (new MassEllipse(25, 0.7), new MovementParameters2()
+                                {
+                                    X=new InitialMovementParameters(0,-3,2,0),
+                                    Y=new InitialMovementParameters(0,-1,1.2,0)
+                                }),
+                                (new MassEllipse(30, 0.6), new MovementParameters2()
+                                {
+                                    X=new InitialMovementParameters(0,2,-1,0),
+                                    Y=new InitialMovementParameters(0,2,-1,0)
+                                }),
+                                (new MassEllipse(10, 0.3), new MovementParameters2()
+                                {
+                                    X=new InitialMovementParameters(0,-12,2,0),
+                                    Y=new InitialMovementParameters(0,4,-1.5,0)
+                                })
+                            });
+
+                        var simulation = await simulator.GenerateSimulationAsync(0, 200);
 
                         var simulationRunner =
                             new SimulationRunner<ElasticCollisionMoment>(simulation, runtime);
@@ -343,6 +386,8 @@ namespace PhysicsPlayground.Display
 
         private async void SimulatorList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            Stop();
+
             loadingLabel.Content = "Generating Simulation...";
 
             var (name, simulator )= _simulators[simulatorList.SelectedIndex];
