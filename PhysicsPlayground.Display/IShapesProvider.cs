@@ -7,4 +7,9 @@ namespace PhysicsPlayground.Display
     {
         IEnumerable<Shape> Shapes { get; }
     }
+
+    internal interface IMetadataProvider
+    {
+        string Metadata { get; }
+    }
 }

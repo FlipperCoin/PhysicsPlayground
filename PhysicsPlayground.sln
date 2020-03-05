@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.ConsoleTests", "PhysicsPlayground.ConsoleTests\PhysicsPlayground.ConsoleTests.csproj", "{E6F40734-CF24-4355-A905-AD548E42CCDC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Engine", "PhysicsPlayground.Engine\PhysicsPlayground.Engine.csproj", "{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsLibrary.Engine.Momentum", "PhysicsLibrary.Engine.Momentum\PhysicsLibrary.Engine.Momentum.csproj", "{F78241A2-9675-401F-A665-3FAD7119D0BE}"
@@ -17,16 +15,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Math", "P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Display", "PhysicsPlayground.Display\PhysicsPlayground.Display.csproj", "{E7126450-9F32-4CA3-9AE1-E5A3B6EE696B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.Console.Tests", "PhysicsPlayground.Console.Tests\PhysicsPlayground.Console.Tests.csproj", "{A497C114-D540-4C37-8C51-3FD2FF923945}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E6F40734-CF24-4355-A905-AD548E42CCDC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2ED086C3-28CA-4ADD-A5ED-D4D50AD23A6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,6 +47,10 @@ Global
 		{E7126450-9F32-4CA3-9AE1-E5A3B6EE696B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7126450-9F32-4CA3-9AE1-E5A3B6EE696B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7126450-9F32-4CA3-9AE1-E5A3B6EE696B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A497C114-D540-4C37-8C51-3FD2FF923945}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A497C114-D540-4C37-8C51-3FD2FF923945}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A497C114-D540-4C37-8C51-3FD2FF923945}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A497C114-D540-4C37-8C51-3FD2FF923945}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

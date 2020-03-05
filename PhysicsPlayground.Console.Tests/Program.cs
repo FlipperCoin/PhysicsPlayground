@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Spatial.Euclidean;
-using MathNet.Spatial.Units;
-using PhysicsPlayground.Math;
 using Polynomial = PhysicsPlayground.Math.Polynomial;
 
-namespace PhysicsPlayground.ConsoleTests
+namespace PhysicsPlayground.Console.Tests
 {
     class Program
     {
         static void Main(string[] args)
+        {
+        }
+
+        private static void EllasticColl()
         {
             var m1 = 4d;
             var m2 = 6d;
@@ -45,8 +40,8 @@ namespace PhysicsPlayground.ConsoleTests
             Vector2D v1 = new Vector2D(vx1, vy1);
             Vector2D v2 = new Vector2D(vx2, vy2);
             var tangent = new Vector2D(dx.Evaluate(t), dy.Evaluate(t)).Orthogonal.Normalize();
-            
-            var v1t= v1.ProjectOn(tangent);
+
+            var v1t = v1.ProjectOn(tangent);
             var u1t = v1t;
             var v1p = v1 - v1t;
 
@@ -56,14 +51,12 @@ namespace PhysicsPlayground.ConsoleTests
 
             var p_p = m1 * v1p.Length + m2 * v2p.Length;
             var e = 0.5 * m1 * System.Math.Pow(v1.Length, 2) + 0.5 * m2 * System.Math.Pow(v2.Length, 2);
-            
+
             var u1p = new Polynomial(p_p / m1, -m2 / m1);
             var u2pLengths = (0.5 * m1 * ((u1p ^ 2) + System.Math.Pow(u1t.Length, 2)) +
-                0.5 * m2 * ((new Polynomial(0, 1) ^ 2) + System.Math.Pow(u2t.Length, 2))).Roots(e);
-            
+                              0.5 * m2 * ((new Polynomial(0, 1) ^ 2) + System.Math.Pow(u2t.Length, 2))).Roots(e);
+
             var u1pLength = u1p.Evaluate(u2pLengths.First());
-
-
         }
     }
 }

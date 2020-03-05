@@ -52,7 +52,7 @@ namespace PhysicsPlayground.Simulation
             return (x.Derivative().Derivative().Evaluate(t), y.Derivative().Derivative().Evaluate(t));
         }
 
-        private (Polynomial x, Polynomial y) GetEquationsInTime(double t)
+        public (Polynomial x, Polynomial y) GetEquationsInTime(double t)
         {
             return (_xEquations[t].Value, _yEquations[t].Value);
         }

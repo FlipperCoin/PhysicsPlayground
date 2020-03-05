@@ -5,33 +5,68 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PhysicsPlayground.Display"
         mc:Ignorable="d"
-        Title="Physics Playground" Height="450" Width="800">
+        Title="Physics Playground" Height="768" Width="1366">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.9*"></RowDefinition>
-            <RowDefinition Height="0.1*" ></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <Canvas Name="canvas" Grid.Row="0" Background="AliceBlue" ClipToBounds="True">
-            <Canvas.RenderTransform>
-                <ScaleTransform x:Name="scaleTransform"></ScaleTransform>
-            </Canvas.RenderTransform>
-        </Canvas>
-        <Border BorderThickness="0 1 0 0" BorderBrush="Black" Grid.Row="1">
-            <DockPanel>
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <ScrollBar Name="zoomBar" Orientation="Horizontal" Margin="10 0 0 0" MinWidth="200" Value="1" Minimum="0.1" Maximum="2" ValueChanged="ZoomBar_OnValueChanged"></ScrollBar>
-                    <StackPanel Orientation="Horizontal" Margin="10 0 0 0">
-                        <Label>Speed: </Label>
-                        <TextBox Name="speedTextBox" KeyUp="SpeedTextBox_OnKeyUp" LostFocus="SpeedTextBox_OnLostFocus">1</TextBox>
+        <Menu Grid.Row="0">
+            <MenuItem Header="File"></MenuItem>
+            <MenuItem Header="Tools"></MenuItem>
+            <MenuItem Header="Help"></MenuItem>
+        </Menu>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.1*"></ColumnDefinition>
+                <ColumnDefinition Width="0.9*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Border BorderThickness="0 0 1 0" BorderBrush="Black">
+                    <StackPanel>
+                        <ListBox>
+
+                        </ListBox>
                     </StackPanel>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right">
-                    <Label Name="loadingLabel" Margin="0 0 10 0"></Label>
-                    <Label Name="timerLabel" Margin ="0 0 10 0"></Label>
-                    <Button Name="startBtn" Click="StartButton_Click" Content="Start" Width="64" VerticalAlignment="Center" Margin="0 0 25 0"/>
-                    <Button Name="stopBtn" Click="StopButton_Click" Content="Stop" Width="64" VerticalAlignment="Center" Margin="0 0 15 0"></Button>
-                </StackPanel>
-            </DockPanel>
-        </Border>
+                </Border>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="30"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Canvas Name="canvas" Background="AliceBlue" ClipToBounds="True" Grid.Row="0">
+                    </Canvas>
+                    <Border BorderThickness="0 1 0 0" BorderBrush="Black" Grid.Row="1">
+                        <DockPanel>
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                <ScrollBar Name="zoomBar" Orientation="Horizontal" Margin="10 0 0 0" MinWidth="200" Value="1" Minimum="0.1" Maximum="2" ValueChanged="ZoomBar_OnValueChanged"></ScrollBar>
+                                <StackPanel Orientation="Horizontal" Margin="10 0 0 0">
+                                    <Label>Speed:</Label>
+                                    <TextBox Name="speedTextBox" KeyUp="SpeedTextBox_OnKeyUp" LostFocus="SpeedTextBox_OnLostFocus">1</TextBox>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                <Label Name="loadingLabel" Margin="0 0 10 0"></Label>
+                                <Label Name="timerLabel" Margin ="0 0 10 0"></Label>
+                                <Button Name="startBtn" Click="StartButton_Click" Content="Start" Width="64" VerticalAlignment="Center" Margin="0 0 25 0"/>
+                                <Button Name="stopBtn" Click="StopButton_Click" Content="Stop" Width="64" VerticalAlignment="Center" Margin="0 0 15 0"></Button>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </Grid>
+                <GridSplitter ResizeDirection="Rows" Height="3" Grid.Row="1" HorizontalAlignment="Stretch"/>
+                <Grid Grid.Row="2">
+                    <TextBox Name="metadataText" IsReadOnly="True"></TextBox>
+                </Grid>
+            </Grid>
+        </Grid>
     </Grid>
+    
 </Window>

@@ -3,24 +3,29 @@ using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using PhysicsPlayground.Simulation;
 using PhysicsPlayground.Simulation.Simulators;
 
 namespace PhysicsPlayground.Display.DisplayAdapters
 {
-    internal class MassEllipseDisplayAdapter : IDisplayAdapter<IEnumerable<(MassEllipse, (double, double))>>
+    internal class ElasticCollisionDisplayAdapter : IDisplayAdapter<ElasticCollisionMoment>
     {
         private readonly IScreenParametersProvider _screenParams;
 
-        public MassEllipseDisplayAdapter(IScreenParametersProvider screenParams)
+        public ElasticCollisionDisplayAdapter(IScreenParametersProvider screenParams)
         {
             _screenParams = screenParams;
         }
 
-        public IEnumerable<Shape> GetDrawables(IEnumerable<(MassEllipse, (double, double))> adaptable)
+        public IEnumerable<Shape> GetDrawables(ElasticCollisionMoment adaptable)
         {
-            return adaptable.Select(ellipseInPlane =>
+            return adaptable.Balls.Select(ellipseInPlane =>
             {
-                var (massEllipse, (x, y)) = ellipseInPlane;
+                var (massEllipse, (x, y)) = 
+                    (ellipseInPlane.Item1, 
+                        (ellipseInPlane.Item2.EllipseMovementParameters.X.D, 
+                            ellipseInPlane.Item2.EllipseMovementParameters.Y.D)
+                        );
 
                 Ellipse ball = new Ellipse();
                 ball.Height = 2 * (massEllipse.Radius * _screenParams.PixelsPerMeter);

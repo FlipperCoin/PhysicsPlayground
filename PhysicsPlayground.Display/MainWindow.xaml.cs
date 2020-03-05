@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using PhysicsPlayground.Display.DisplayAdapters;
@@ -36,8 +32,9 @@ namespace PhysicsPlayground.Display
         private IRunnable _runningProgram;
         private ITimeProvider _timeProvider;
         private ShapesProvider _shapesProvider;
+        private MetadataProvider _metadataProvider;
         private IScreenParametersProvider _screenParams;
-
+        
         public double PixelsPerMeter => _screenParams.PixelsPerMeter;
 
         public MainWindow()
@@ -81,7 +78,7 @@ namespace PhysicsPlayground.Display
             var runtime = new RunTime();
             _runningProgram = runtime;
             _timeProvider = runtime;
-            var simulator = new ElasticCollisionSimulator(new Box() { X1 = -6, X2 = 6, Y1 = -5, Y2 = 5 },
+            var simulator = new ElasticCollisionSimulator(new Box() { X1 = -6, X2 = 6, Y1 = -2, Y2 = 2 },
                 new List<(MassEllipse, MovementParameters2)>()
                 {
                     (new MassEllipse(15, 0.5), new MovementParameters2()
@@ -106,8 +103,8 @@ namespace PhysicsPlayground.Display
                     }),
                     (new MassEllipse(10, 0.3), new MovementParameters2()
                     {
-                        X=new InitialMovementParameters(0,-12,4,0),
-                        Y=new InitialMovementParameters(0,4,-4,0)
+                        X=new InitialMovementParameters(0,-12,1.5,0),
+                        Y=new InitialMovementParameters(0,4,-1.5,0)
                     }),
                     (new MassEllipse(80, 0.6), new MovementParameters2()
                     {
@@ -124,9 +121,16 @@ namespace PhysicsPlayground.Display
             stopBtn.IsEnabled = true;
             loadingLabel.Content = "Simulation Ready";
 
+            var simulationRunner =
+                new SimulationRunner<ElasticCollisionMoment>(simulation, runtime);
+
             _shapesProvider = ShapesProvider.CreateInstance(
-                new SimulationRunner<IEnumerable<(MassEllipse, (double, double))>>(simulation, runtime),
-                new MassEllipseDisplayAdapter(_screenParams)
+                simulationRunner,
+                new ElasticCollisionDisplayAdapter(_screenParams)
+                );
+            _metadataProvider = MetadataProvider.CreateInstance(
+                simulationRunner,
+                new JsonSerializerMetadataProvider<ElasticCollisionMoment>()
                 );
             _clock = new DispatcherTimer();
             _clock.Interval = TimeSpan.FromMilliseconds(_tick);
@@ -186,6 +190,7 @@ namespace PhysicsPlayground.Display
         private void UpdateGraphics()
         {
             timerLabel.Content = _timeProvider.Time.ToString(@"hh\:mm\:ss\:ff");
+            metadataText.Text = _metadataProvider.Metadata;
 
             DrawScale();
             DrawObjectsGrid();
@@ -316,5 +321,18 @@ namespace PhysicsPlayground.Display
         {
             if (_screenParams != null) _screenParams.Zoom = e.NewValue;
         }
+    }
+
+    internal class JsonSerializerMetadataProvider<T> : IMetadataAdapter<T>
+    {
+        public string GetMetadata(T metadataSource)
+        {
+            return JsonSerializer.Serialize(metadataSource);
+        }
+    }
+
+    internal interface ISimulationMetadataProvider
+    {
+        public string Metadata { get; }
     }
 }

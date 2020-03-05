@@ -28,7 +28,7 @@ namespace PhysicsPlayground.Simulation.Simulators
         }
     }
 
-    public class ElasticCollisionSimulator : SyncSimulator<IEnumerable<(MassEllipse, (double, double))>>
+    public class ElasticCollisionSimulator : SyncSimulator<ElasticCollisionMoment>
     {
         private readonly Box _box;
         private readonly IList<(MassEllipse, MovementParameters2)> _objectsAndMovementParameters;
@@ -40,7 +40,7 @@ namespace PhysicsPlayground.Simulation.Simulators
             _objectsAndMovementParameters = objectsAndMovementParameters.ToList();
         }
 
-        public override ISimulation<IEnumerable<(MassEllipse, (double, double))>> GenerateSimulation(double t1, double t2)
+        public override ISimulation<ElasticCollisionMoment> GenerateSimulation(double t1, double t2)
         {
             _logger.Information(
                 "Generating elastic collision simulation starting {t1} ending {t2}", 
@@ -98,7 +98,7 @@ namespace PhysicsPlayground.Simulation.Simulators
 
             _logger.Information("Finished elastic collision simulation");
 
-            return new PlaneMovementSimulation<MassEllipse>(objects.Select(obj =>
+            return new EllasticCollisionSimulation(_box, objects.Select(obj =>
                 (obj.massObj, new MovementEquation(obj.Item2.Item1.xEquations, obj.Item2.Item2.yEquations))).ToList());
         }
 
