@@ -183,5 +183,18 @@ namespace PhysicsPlayground.Math
                 return str;
             }));
         }
+
+        public double DefiniteIntegral(in double endpoint)
+        {
+            if (endpoint < 0) return DefiniteIntegral(endpoint, 0);
+
+            return DefiniteIntegral(0, endpoint);
+        }
+
+        public double DefiniteIntegral(in double lowerEndpoint, in double upperEndpoint)
+        {
+            var antiDerivative = this.AntiDerivative();
+            return antiDerivative.Evaluate(upperEndpoint) - antiDerivative.Evaluate(lowerEndpoint);
+        }
     }
 }

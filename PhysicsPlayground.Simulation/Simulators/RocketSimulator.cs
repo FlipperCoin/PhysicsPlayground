@@ -7,15 +7,15 @@ namespace PhysicsPlayground.Simulation.Simulators
     public class RocketSimulator : SyncSimulator<RocketSimulationMoment>
     {
         private readonly double _baseMass;
-        private readonly double _fuelMass;
+        private readonly double _propellantMass;
         private readonly double _massLossRate;
         private readonly double _exhaustV;
         private readonly double _v0;
 
-        public RocketSimulator(double baseMass, double fuelMass, double massLossRate, double exhaustV, double v0)
+        public RocketSimulator(double baseMass, double propellantMass, double massLossRate, double exhaustV, double v0)
         {
             _baseMass = baseMass;
-            _fuelMass = fuelMass;
+            _propellantMass = propellantMass;
             _massLossRate = massLossRate;
             _exhaustV = exhaustV;
             _v0 = v0;
@@ -23,7 +23,7 @@ namespace PhysicsPlayground.Simulation.Simulators
 
         public override ISimulation<RocketSimulationMoment> GenerateSimulation(double t1, double t2)
         {
-            double burnTime = t1 + _fuelMass / _massLossRate;
+            double burnTime = t1 + _propellantMass / _massLossRate;
 
             var xa = new IntervalIndexer<Func<double, double>>();
             xa.AddInterval((Endpoints.Closed(t1), Endpoints.Closed(burnTime)),
@@ -43,26 +43,26 @@ namespace PhysicsPlayground.Simulation.Simulators
             x.AddInterval((Endpoints.Open(burnTime), Endpoints.Unbounded),
                 (t) => RocketXEquation(burnTime, t1) + RocketVEquation(burnTime, t1) * (t - burnTime));
 
-            return new RocketSimulation(_baseMass, _fuelMass, _massLossRate, burnTime, xa, xv, x);
+            return new RocketSimulation(_baseMass, _propellantMass, _massLossRate, burnTime, xa, xv, x);
         }
 
         private double RocketAEquation(double t, double t0)
         {
-            return ((-_massLossRate * _exhaustV) / (_baseMass + _fuelMass)) /
-                   ((1 - _massLossRate * (t - t0)) / (_baseMass + _fuelMass));
+            return ((-_massLossRate * _exhaustV) / (_baseMass + _propellantMass)) /
+                   ((1 - _massLossRate * (t - t0)) / (_baseMass + _propellantMass));
         }
 
         private double RocketVEquation(double t, double t0)
         {
             return (_v0 + _exhaustV * System.Math.Log(
-                        (_baseMass + _fuelMass) /
-                        (_baseMass + _fuelMass - (_massLossRate * (t - t0)))
+                        (_baseMass + _propellantMass) /
+                        (_baseMass + _propellantMass - (_massLossRate * (t - t0)))
                     ));
         }
 
         private double RocketXEquation(double t, double t0)
         {
-            var m0 = _baseMass + _fuelMass;
+            var m0 = _baseMass + _propellantMass;
             var alpha = _massLossRate;
             return _exhaustV * (((t - t0) - (m0 / alpha)) * System.Math.Log(m0 / (m0 - alpha * (t - t0))) + (t - t0)) +_v0 * (t - t0);
         }

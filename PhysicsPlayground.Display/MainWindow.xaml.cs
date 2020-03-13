@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using PhysicsPlayground.Display.DisplayAdapters;
+using PhysicsPlayground.Math;
 using PhysicsPlayground.Simulation;
 using PhysicsPlayground.Simulation.Simulators;
 using Serilog;
@@ -89,6 +90,26 @@ namespace PhysicsPlayground.Display
             _simulators =
                 new List<(string name, Func<Task<(ShapesProvider shapesProvider, MetadataProvider metadataProvider)>>)>
                 {
+                    ("Angular Momentum", async () =>
+                    {
+                        var simulator = new AngularMomentumSimulator(new SpecificMassEllipse(new Polynomial(1), 3), 0, 4);
+
+                        var simulation = await simulator.GenerateSimulationAsync(0, 200);
+
+                        var simulationRunner =
+                            new SimulationRunner<AngularMomentumSimulationMoment>(simulation, runtime);
+
+                        var shapesProvider = ShapesProvider.CreateInstance(
+                            simulationRunner,
+                            new AngularMomentumDisplayAdapter(_screenParams)
+                        );
+                        var metadataProvider = MetadataProvider.CreateInstance(
+                            simulationRunner,
+                            new JsonSerializerMetadataProvider<AngularMomentumSimulationMoment>()
+                        );
+
+                        return (shapesProvider, metadataProvider);
+                    }),
                     ("Elastic Collision", async () =>
                     {
                         var simulator = new ElasticCollisionSimulator(new Box() { X1 = -6, X2 = 6, Y1 = -2, Y2 = 2 },
@@ -419,39 +440,11 @@ namespace PhysicsPlayground.Display
         }
     }
 
-    internal class RocketDisplayAdapter : IDisplayAdapter<RocketSimulationMoment>
-    {
-        private readonly IScreenParametersProvider _screenParams;
-
-        public RocketDisplayAdapter(IScreenParametersProvider screenParams)
-        {
-            _screenParams = screenParams;
-        }
-
-        public IEnumerable<Shape> GetDrawables(RocketSimulationMoment adaptable)
-        {
-            var rocket = new Rectangle();
-            rocket.Width = 1 * _screenParams.PixelsPerMeter;
-            rocket.Height = 10 * _screenParams.PixelsPerMeter;
-            rocket.Fill = new SolidColorBrush(Colors.Black);
-            
-            Canvas.SetTop(rocket, (_screenParams.YCenter - 10 * _screenParams.PixelsPerMeter) - adaptable.Y.D * _screenParams.PixelsPerMeter);
-            Canvas.SetLeft(rocket, _screenParams.XCenter - 0.5 * _screenParams.PixelsPerMeter);
-
-            return Enumerable.Repeat(rocket, 1);
-        }
-    }
-
     internal class JsonSerializerMetadataProvider<T> : IMetadataAdapter<T>
     {
         public string GetMetadata(T metadataSource)
         {
             return JsonSerializer.Serialize(metadataSource);
         }
-    }
-
-    internal interface ISimulationMetadataProvider
-    {
-        public string Metadata { get; }
     }
 }
