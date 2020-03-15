@@ -90,9 +90,9 @@ namespace PhysicsPlayground.Display
             _simulators =
                 new List<(string name, Func<Task<(ShapesProvider shapesProvider, MetadataProvider metadataProvider)>>)>
                 {
-                    ("Angular Momentum", async () =>
+                    ("Torque", async () =>
                     {
-                        var simulator = new AngularMomentumSimulator(new SpecificMassEllipse(new Polynomial(1), 3), 0, 4);
+                        var simulator = new TorqueSimulator(new SpecificMassEllipse(new Polynomial(1), 3), 0, 4);
 
                         var simulation = await simulator.GenerateSimulationAsync(0, 200);
 
@@ -187,6 +187,39 @@ namespace PhysicsPlayground.Display
                                 {
                                     X=new InitialMovementParameters(0,-12,2,0),
                                     Y=new InitialMovementParameters(0,4,-1.5,0)
+                                })
+                            });
+
+                        var simulation = await simulator.GenerateSimulationAsync(0, 200);
+
+                        var simulationRunner =
+                            new SimulationRunner<ElasticCollisionMoment>(simulation, runtime);
+
+                        var shapesProvider = ShapesProvider.CreateInstance(
+                            simulationRunner,
+                            new ElasticCollisionDisplayAdapter(_screenParams)
+                        );
+                        var metadataProvider = MetadataProvider.CreateInstance(
+                            simulationRunner,
+                            new JsonSerializerMetadataProvider<ElasticCollisionMoment>()
+                        );
+
+                        return (shapesProvider, metadataProvider);
+                    }),
+                    ("Elastic Collision Pi", async () =>
+                    {
+                        var simulator = new ElasticCollisionSimulator(new Box() { X1 = -6, X2 = 6, Y1 = -2, Y2 = 2 },
+                            new List<(MassEllipse, MovementParameters2)>()
+                            {
+                                (new MassEllipse(1, 0.5), new MovementParameters2()
+                                {
+                                    X=new InitialMovementParameters(0,0,-2,0),
+                                    Y=new InitialMovementParameters(0,0,0,0)
+                                }),
+                                (new MassEllipse(1000, 0.5), new MovementParameters2()
+                                {
+                                    X=new InitialMovementParameters(0,-2,2,0),
+                                    Y=new InitialMovementParameters(0,0,0,0)
                                 })
                             });
 

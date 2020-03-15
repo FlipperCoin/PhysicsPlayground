@@ -17,13 +17,13 @@ namespace PhysicsPlayground.Simulation.Simulators
         }
     }
 
-    public class AngularMomentumSimulator : SyncSimulator<AngularMomentumSimulationMoment>
+    public class TorqueSimulator : SyncSimulator<AngularMomentumSimulationMoment>
     {
         private readonly SpecificMassEllipse _disc;
         private readonly double _angularVel0;
         private readonly double _force;
 
-        public AngularMomentumSimulator(SpecificMassEllipse disc, double angularVel0, double force)
+        public TorqueSimulator(SpecificMassEllipse disc, double angularVel0, double force)
         {
             _disc = disc;
             _angularVel0 = angularVel0;
