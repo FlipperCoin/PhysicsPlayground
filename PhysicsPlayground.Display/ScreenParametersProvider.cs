@@ -7,5 +7,7 @@
         public double PixelsPerMeter => PixelsPerMeterBase * Zoom;
         public double XCenter { get; set; }
         public double YCenter { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
     }
 }

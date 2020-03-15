@@ -80,7 +80,9 @@ namespace PhysicsPlayground.Display
                 PixelsPerMeterBase = pixelsPerMeterBase,
                 Zoom = zoomBar.Value,
                 XCenter = canvas.ActualWidth / 2,
-                YCenter = canvas.ActualHeight / 2
+                YCenter = canvas.ActualHeight / 2,
+                Width = canvas.ActualWidth,
+                Height = canvas.ActualHeight
             };
 
             var runtime = new RunTime();
@@ -92,7 +94,7 @@ namespace PhysicsPlayground.Display
                 {
                     ("Torque", async () =>
                     {
-                        var simulator = new TorqueSimulator(new SpecificMassEllipse(new Polynomial(1), 3), 0, 4);
+                        var simulator = new TorqueSimulator(new SpecificMassEllipse(new Polynomial(1), 3), 0, -4);
 
                         var simulation = await simulator.GenerateSimulationAsync(0, 200);
 
@@ -101,7 +103,31 @@ namespace PhysicsPlayground.Display
 
                         var shapesProvider = ShapesProvider.CreateInstance(
                             simulationRunner,
-                            new AngularMomentumDisplayAdapter(_screenParams)
+                            new AngularMomentumDisplayAdapter(_screenParams, false, false)
+                        );
+                        var metadataProvider = MetadataProvider.CreateInstance(
+                            simulationRunner,
+                            new JsonSerializerMetadataProvider<AngularMomentumSimulationMoment>()
+                        );
+
+                        return (shapesProvider, metadataProvider);
+                    }),
+                    ("Torque From Friction", async () =>
+                    {
+                        var simulator = new FrictionAndTorqueSimulator(
+                            new SpecificMassEllipse(new Polynomial(1), 1), 
+                            15,
+                            0,
+                            1);
+
+                        var simulation = await simulator.GenerateSimulationAsync(0, 200);
+
+                        var simulationRunner =
+                            new SimulationRunner<AngularMomentumSimulationMoment>(simulation, runtime);
+
+                        var shapesProvider = ShapesProvider.CreateInstance(
+                            simulationRunner,
+                            new AngularMomentumDisplayAdapter(_screenParams, true, true)
                         );
                         var metadataProvider = MetadataProvider.CreateInstance(
                             simulationRunner,
@@ -470,6 +496,15 @@ namespace PhysicsPlayground.Display
             startBtn.IsEnabled = true;
             stopBtn.IsEnabled = true;
             loadingLabel.Content = "Simulation Ready";
+        }
+
+        private void Canvas_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (_screenParams != null)
+            {
+                _screenParams.Height = canvas.ActualHeight;
+                _screenParams.Width = canvas.ActualWidth;
+            }
         }
     }
 

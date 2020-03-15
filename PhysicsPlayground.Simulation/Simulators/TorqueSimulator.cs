@@ -40,28 +40,38 @@ namespace PhysicsPlayground.Simulation.Simulators
             var angularAcceleration = (_force * radius) / momentOfInertia;
 
             var angleOverTime = (new Polynomial(angularAcceleration)).AntiDerivative(_angularVel0).AntiDerivative();
-            
-            return new AngularMomentumSimulation(_disc, angleOverTime);
+            var anglet = new IntervalIndexer<Polynomial>();
+            anglet.AddInterval((Endpoints.Closed(t1),Endpoints.Closed(t2)), angleOverTime);
+
+            var defaultIndexer = new IntervalIndexer<Polynomial>(new Polynomial());
+            return new AngularMomentumSimulation(_disc, defaultIndexer, anglet, defaultIndexer, defaultIndexer);
         }
     }
 
     public class AngularMomentumSimulation : ISimulation<AngularMomentumSimulationMoment>
     {
-        private readonly SpecificMassEllipse _disc;
-        private readonly Polynomial _angleOverTime;
+        private readonly SpecificMassEllipse _disk;
+        private readonly IntervalIndexer<Polynomial> _omegat;
+        private readonly IntervalIndexer<Polynomial> _anglet;
+        private readonly IntervalIndexer<Polynomial> _vt;
+        private readonly IntervalIndexer<Polynomial> _xt;
 
-        public AngularMomentumSimulation(SpecificMassEllipse disc, Polynomial angleOverTime)
+        public AngularMomentumSimulation(SpecificMassEllipse disk, IntervalIndexer<Polynomial> omegat, IntervalIndexer<Polynomial> anglet, IntervalIndexer<Polynomial> vt, IntervalIndexer<Polynomial> xt)
         {
-            _disc = disc;
-            _angleOverTime = angleOverTime;
+            _disk = disk;
+            _omegat = omegat;
+            _anglet = anglet;
+            _vt = vt;
+            _xt = xt;
         }
 
         public AngularMomentumSimulationMoment GetMomentInTime(double t)
         {
             return new AngularMomentumSimulationMoment()
             {
-                Disc = _disc,
-                Angle = _angleOverTime.Evaluate(t)
+                Disk = _disk,
+                Angle = _anglet[t].Value.Evaluate(t),
+                X = new AxisMovementParameters() { V= _vt[t].Value.Evaluate(t), D = _xt[t].Value.Evaluate(t) }
             };
         }
     }
@@ -69,7 +79,8 @@ namespace PhysicsPlayground.Simulation.Simulators
     public class AngularMomentumSimulationMoment
     {
         public double Angle { get; set; }
-        public SpecificMassEllipse Disc { get; set; }
+        public SpecificMassEllipse Disk { get; set; }
+        public AxisMovementParameters X { get; set; }
         public double Momentum { get; set; }
         public double AngularMomentum { get; set; }
         public double TranslationalKineticEnergy { get; set; }

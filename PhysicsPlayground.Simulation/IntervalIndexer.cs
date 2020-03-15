@@ -8,6 +8,14 @@ namespace PhysicsPlayground.Simulation
     {
         private List<(((double, EndpointType), (double, EndpointType)), Optional<T>)> _intervals;
 
+        public IntervalIndexer(T defaultValue)
+        {
+            _intervals = new List<(((double, EndpointType), (double, EndpointType)), Optional<T>)>
+            {
+                ((Endpoints.Unbounded,Endpoints.Unbounded), new Optional<T>(defaultValue))
+            };
+        }
+
         public IntervalIndexer()
         {
             _intervals = new List<(((double, EndpointType), (double, EndpointType)), Optional<T>)>

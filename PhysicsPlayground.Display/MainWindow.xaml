@@ -41,7 +41,7 @@
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Canvas Name="canvas" Background="AliceBlue" ClipToBounds="True" Grid.Row="0">
+                    <Canvas Name="canvas" Background="AliceBlue" ClipToBounds="True" Grid.Row="0" SizeChanged="Canvas_OnSizeChanged">
                     </Canvas>
                     <Border BorderThickness="0 1 0 0" BorderBrush="Black" Grid.Row="1">
                         <DockPanel>
