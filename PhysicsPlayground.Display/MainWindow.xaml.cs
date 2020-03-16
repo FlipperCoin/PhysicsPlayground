@@ -116,8 +116,8 @@ namespace PhysicsPlayground.Display
                     {
                         var simulator = new FrictionAndTorqueSimulator(
                             new SpecificMassEllipse(new Polynomial(1), 1), 
-                            15,
                             0,
+                            -20,
                             1);
 
                         var simulation = await simulator.GenerateSimulationAsync(0, 200);

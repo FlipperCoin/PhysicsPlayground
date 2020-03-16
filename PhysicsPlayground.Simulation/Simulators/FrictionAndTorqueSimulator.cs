@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using PhysicsPlayground.Math;
+using MathNet.Numerics;
+using Polynomial = PhysicsPlayground.Math.Polynomial;
 
 namespace PhysicsPlayground.Simulation.Simulators
 {
@@ -25,67 +26,79 @@ namespace PhysicsPlayground.Simulation.Simulators
 
         public override ISimulation<AngularMomentumSimulationMoment> GenerateSimulation(double t1, double t2)
         {
-            var circumferenceByR = new Polynomial(0, 2 * System.Math.PI);
-            var tMass = (circumferenceByR * _disk.SpecificMassByR).DefiniteIntegral(_disk.Radius);
-            var rSquared = new Polynomial(0, 0, 1);
-            var iZ = ((circumferenceByR * _disk.SpecificMassByR) * rSquared).DefiniteIntegral(_disk.Radius);
-            var friction = -(_coOfKineticFriction * tMass * g0);
-            
-            var torque = _disk.Radius * friction;
-            var angularAcceleration = torque / iZ;
-            var omega = (new Polynomial(angularAcceleration)).AntiDerivative(_omega0);
+            var vt = new IntervalIndexer<Polynomial>();
+            var xt = new IntervalIndexer<Polynomial>();
+            var omegat = new IntervalIndexer<Polynomial>();
+            var anglet = new IntervalIndexer<Polynomial>();
 
-            var a = friction / tMass;
-            var v = (new Polynomial(a)).AntiDerivative(_v0);
+            var v = new Polynomial(_v0);
+            var omega = new Polynomial(_omega0);
 
             var vOnSurface = v + omega * _disk.Radius;
 
-            var tf = t2;
-            bool foundTf = true;
-            try
+            var t = t1;
+
+            var vOnSurface0 = vOnSurface.Evaluate(t);
+
+            // There's friction that acts on the disk
+            if (vOnSurface0.CompareTo(0,6e-5) != 0)
             {
-                tf = vOnSurface.Roots(0, t1, t2).First();
+                var circumferenceByR = new Polynomial(0, 2 * System.Math.PI);
+                var tMass = (circumferenceByR * _disk.SpecificMassByR).DefiniteIntegral(_disk.Radius);
+                var rSquared = new Polynomial(0, 0, 1);
+                var iZ = ((circumferenceByR * _disk.SpecificMassByR) * rSquared).DefiniteIntegral(_disk.Radius);
+                var friction = (-System.Math.Sign(vOnSurface0)) * (_coOfKineticFriction * tMass * g0);
+
+                var torque = _disk.Radius * friction;
+                var angularAcceleration = torque / iZ;
+                omega = (new Polynomial(angularAcceleration)).AntiDerivative(_omega0);
+
+                var a = friction / tMass;
+                v = (new Polynomial(a)).AntiDerivative(_v0);
+
+                vOnSurface = v + omega * _disk.Radius;
+
+                var tf = t2;
+                try
+                {
+                    tf = vOnSurface.Roots(0, t1, t2).First();
+                }
+                catch (InvalidOperationException)
+                {
+                }
+
+                var slipInterval = (Endpoints.Closed(t), Endpoints.Open(tf));
+
+                vt.AddInterval(slipInterval, v);
+                xt.AddInterval(slipInterval, v.AntiDerivative());
+                omegat.AddInterval(slipInterval, omega);
+                anglet.AddInterval(slipInterval, omega.AntiDerivative());
+
+                t = tf;
             }
-            catch (InvalidOperationException)
+
+            if (t < t2)
             {
-                foundTf = false;
-            }
+                var noSlipInterval = (Endpoints.Closed(t), Endpoints.Unbounded);
 
-            var slipInterval = (Endpoints.Closed(t1), Endpoints.Closed(tf));
-            var noSlipInterval = (Endpoints.Open(tf), Endpoints.Unbounded);
-
-            var vt = new IntervalIndexer<Polynomial>();
-            vt.AddInterval(slipInterval, v);
-
-            var xt = new IntervalIndexer<Polynomial>();
-            xt.AddInterval(slipInterval, v.AntiDerivative());
-
-            var omegat = new IntervalIndexer<Polynomial>();
-            omegat.AddInterval(slipInterval, omega);
-
-            var anglet = new IntervalIndexer<Polynomial>();
-            anglet.AddInterval(slipInterval, omega.AntiDerivative());
-
-            if (foundTf)
-            {
                 vt.AddInterval(
                     noSlipInterval, 
-                    new Polynomial(v.Evaluate(tf))
+                    new Polynomial(v.Evaluate(t))
                 );
                 xt.AddInterval(
                     noSlipInterval,
-                    new Polynomial(v.AntiDerivative().Evaluate(tf), v.Evaluate(tf))
-                        .Offset(-tf)
+                    new Polynomial(v.AntiDerivative().Evaluate(t), v.Evaluate(t))
+                        .Offset(-t)
                 );
 
                 omegat.AddInterval(
                     noSlipInterval, 
-                    new Polynomial(omega.Evaluate(tf))
+                    new Polynomial(omega.Evaluate(t))
                 );
                 anglet.AddInterval(
                     noSlipInterval,
-                    new Polynomial(omega.AntiDerivative().Evaluate(tf), omega.Evaluate(tf))
-                        .Offset(-tf)
+                    new Polynomial(omega.AntiDerivative().Evaluate(t), omega.Evaluate(t))
+                        .Offset(-t)
                 );
             }
 

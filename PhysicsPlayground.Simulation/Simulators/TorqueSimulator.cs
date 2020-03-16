@@ -71,7 +71,9 @@ namespace PhysicsPlayground.Simulation.Simulators
             {
                 Disk = _disk,
                 Angle = _anglet[t].Value.Evaluate(t),
-                X = new AxisMovementParameters() { V= _vt[t].Value.Evaluate(t), D = _xt[t].Value.Evaluate(t) }
+                X = new AxisMovementParameters() { V= _vt[t].Value.Evaluate(t), D = _xt[t].Value.Evaluate(t) },
+                AngularVelocity = _omegat[t].Value.Evaluate(t),
+                TranslationalVelocity = _vt[t].Value.Evaluate(t)
             };
         }
     }
@@ -81,6 +83,8 @@ namespace PhysicsPlayground.Simulation.Simulators
         public double Angle { get; set; }
         public SpecificMassEllipse Disk { get; set; }
         public AxisMovementParameters X { get; set; }
+        public double AngularVelocity { get; set; }
+        public double TranslationalVelocity { get; set; }
         public double Momentum { get; set; }
         public double AngularMomentum { get; set; }
         public double TranslationalKineticEnergy { get; set; }
