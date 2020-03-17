@@ -4,6 +4,7 @@ using System.Linq;
 using MathNet.Numerics;
 using MathNet.Spatial.Euclidean;
 using PhysicsPlayground.DataStructures;
+using PhysicsPlayground.Models;
 using PhysicsPlayground.Simulation.Implementations;
 using Serilog;
 using Polynomial = PhysicsPlayground.Math.Polynomial;

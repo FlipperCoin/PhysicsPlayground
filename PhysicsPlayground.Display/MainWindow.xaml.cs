@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using PhysicsPlayground.Display.DisplayAdapters;
 using PhysicsPlayground.Math;
+using PhysicsPlayground.Models;
 using PhysicsPlayground.Runtime;
 using PhysicsPlayground.Simulation;
 using PhysicsPlayground.Simulation.Implementations;

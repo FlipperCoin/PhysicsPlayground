@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using PhysicsPlayground.Models;
 using PhysicsPlayground.Simulation.Simulator.Implementations;
 
 namespace PhysicsPlayground.Simulation.Implementations
@@ -7,7 +8,7 @@ namespace PhysicsPlayground.Simulation.Implementations
     public class EllasticCollisionSimulation : ISimulation<ElasticCollisionMoment>
     {
         private readonly Box _box;
-        private IEnumerable<(MassEllipse, MovementEquation)> _movementEquations;
+        private readonly IEnumerable<(MassEllipse, MovementEquation)> _movementEquations;
 
         public EllasticCollisionSimulation(Box box, IEnumerable<(MassEllipse, MovementEquation)> movementEquations)
         {

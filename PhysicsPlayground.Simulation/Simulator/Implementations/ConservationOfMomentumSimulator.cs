@@ -2,6 +2,7 @@
 using System.Linq;
 using MathNet.Numerics;
 using PhysicsPlayground.DataStructures;
+using PhysicsPlayground.Models;
 using Polynomial = PhysicsPlayground.Math.Polynomial;
 
 namespace PhysicsPlayground.Simulation.Simulator.Implementations

@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PhysicsPlayground.Models\PhysicsPlayground.Models.csproj" />
     <ProjectReference Include="..\PhysicsPlayground.Simulation\PhysicsPlayground.Simulation.csproj" />
   </ItemGroup>
 
