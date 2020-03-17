@@ -12,7 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PhysicsPlayground.DataStructures\PhysicsPlayground.DataStructures.csproj" />
     <ProjectReference Include="..\PhysicsPlayground.Math\PhysicsPlayground.Math.csproj" />
+    <ProjectReference Include="..\PhysicsPlayground.Runtime\PhysicsPlayground.Runtime.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using PhysicsPlayground.Simulation.Simulators;
+using PhysicsPlayground.Simulation.Simulator.Implementations;
 
 namespace PhysicsPlayground.Display.DisplayAdapters
 {

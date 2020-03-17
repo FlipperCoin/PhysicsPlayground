@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using PhysicsPlayground.Simulation;
-using PhysicsPlayground.Simulation.Simulators;
+using PhysicsPlayground.Simulation.Implementations;
 
 namespace PhysicsPlayground.Display.DisplayAdapters
 {

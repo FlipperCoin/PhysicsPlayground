@@ -14,8 +14,10 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using PhysicsPlayground.Display.DisplayAdapters;
 using PhysicsPlayground.Math;
+using PhysicsPlayground.Runtime;
 using PhysicsPlayground.Simulation;
-using PhysicsPlayground.Simulation.Simulators;
+using PhysicsPlayground.Simulation.Implementations;
+using PhysicsPlayground.Simulation.Simulator.Implementations;
 using Serilog;
 
 namespace PhysicsPlayground.Display

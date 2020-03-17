@@ -1,4 +1,5 @@
-﻿using PhysicsPlayground.Math;
+﻿using PhysicsPlayground.DataStructures;
+using PhysicsPlayground.Math;
 
 namespace PhysicsPlayground.Simulation
 {
@@ -12,14 +13,14 @@ namespace PhysicsPlayground.Simulation
             _xEquations = new IntervalIndexer<Polynomial>();
             UpdateXEquations(new Interval()
             {
-                Minimum = IntervalEndpoint.Unbounded, 
-                Maximum = IntervalEndpoint.Unbounded
+                LowerEndpoint = Endpoints.Unbounded,
+                UpperEndpoint = Endpoints.Unbounded
             }, x);
             _yEquations = new IntervalIndexer<Polynomial>();
             UpdateYEquations(new Interval()
             {
-                Minimum = IntervalEndpoint.Unbounded,
-                Maximum = IntervalEndpoint.Unbounded
+                LowerEndpoint = Endpoints.Unbounded,
+                UpperEndpoint = Endpoints.Unbounded
             }, y);
         }
 
@@ -79,7 +80,7 @@ namespace PhysicsPlayground.Simulation
 
 
             equations.AddInterval(
-                ((timeInterval.Minimum.Value,timeInterval.Minimum.Type),(timeInterval.Maximum.Value,timeInterval.Maximum.Type)),
+                (timeInterval.LowerEndpoint, timeInterval.UpperEndpoint),
                 pol);
         }
 

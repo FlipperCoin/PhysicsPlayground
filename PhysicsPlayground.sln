@@ -11,6 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Display",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhysicsPlayground.Console.Tests", "PhysicsPlayground.Console.Tests\PhysicsPlayground.Console.Tests.csproj", "{A497C114-D540-4C37-8C51-3FD2FF923945}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.DataStructures", "PhysicsPlayground.DataStructures\PhysicsPlayground.DataStructures.csproj", "{82A1DAEC-C83C-452A-99F9-1A08E7E224B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.Runtime", "PhysicsPlayground.Runtime\PhysicsPlayground.Runtime.csproj", "{6CB02B9C-1E4B-4540-A6F6-C073B53FD604}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsPlayground.Models", "PhysicsPlayground.Models\PhysicsPlayground.Models.csproj", "{941264C8-9338-4319-94FF-D3B41EB8708A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +39,18 @@ Global
 		{A497C114-D540-4C37-8C51-3FD2FF923945}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A497C114-D540-4C37-8C51-3FD2FF923945}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A497C114-D540-4C37-8C51-3FD2FF923945}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82A1DAEC-C83C-452A-99F9-1A08E7E224B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82A1DAEC-C83C-452A-99F9-1A08E7E224B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82A1DAEC-C83C-452A-99F9-1A08E7E224B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82A1DAEC-C83C-452A-99F9-1A08E7E224B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CB02B9C-1E4B-4540-A6F6-C073B53FD604}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CB02B9C-1E4B-4540-A6F6-C073B53FD604}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CB02B9C-1E4B-4540-A6F6-C073B53FD604}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CB02B9C-1E4B-4540-A6F6-C073B53FD604}.Release|Any CPU.Build.0 = Release|Any CPU
+		{941264C8-9338-4319-94FF-D3B41EB8708A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{941264C8-9338-4319-94FF-D3B41EB8708A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{941264C8-9338-4319-94FF-D3B41EB8708A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{941264C8-9338-4319-94FF-D3B41EB8708A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

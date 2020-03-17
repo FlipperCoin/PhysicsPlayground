@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Shapes;
 using PhysicsPlayground.Display.DisplayAdapters;
+using PhysicsPlayground.Runtime;
 using PhysicsPlayground.Simulation;
 
 namespace PhysicsPlayground.Display
