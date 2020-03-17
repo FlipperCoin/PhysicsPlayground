@@ -92,6 +92,78 @@ namespace PhysicsPlayground.Display
             _simulators =
                 new List<(string name, Func<Task<(ShapesProvider shapesProvider, MetadataProvider metadataProvider)>>)>
                 {
+                    ("Torque From Friction", async () =>
+                    {
+                        var simulator = new FrictionAndTorqueSimulator(
+                            new SpecificMassEllipse(new Polynomial(1), 1), 
+                            0,
+                            20,
+                            1);
+
+                        var simulation = await simulator.GenerateSimulationAsync(0, 200);
+
+                        var simulationRunner =
+                            new SimulationRunner<AngularMomentumSimulationMoment>(simulation, runtime);
+
+                        var shapesProvider = ShapesProvider.CreateInstance(
+                            simulationRunner,
+                            new AngularMomentumDisplayAdapter(_screenParams, true, true)
+                        );
+                        var metadataProvider = MetadataProvider.CreateInstance(
+                            simulationRunner,
+                            new JsonSerializerMetadataProvider<AngularMomentumSimulationMoment>()
+                        );
+
+                        return (shapesProvider, metadataProvider);
+                    }),
+                    ("Torque From Friction 2", async () =>
+                    {
+                        var simulator = new FrictionAndTorqueSimulator(
+                            new SpecificMassEllipse(new Polynomial(1), 1), 
+                            13,
+                            0,
+                            1);
+
+                        var simulation = await simulator.GenerateSimulationAsync(0, 200);
+
+                        var simulationRunner =
+                            new SimulationRunner<AngularMomentumSimulationMoment>(simulation, runtime);
+
+                        var shapesProvider = ShapesProvider.CreateInstance(
+                            simulationRunner,
+                            new AngularMomentumDisplayAdapter(_screenParams, true, true)
+                        );
+                        var metadataProvider = MetadataProvider.CreateInstance(
+                            simulationRunner,
+                            new JsonSerializerMetadataProvider<AngularMomentumSimulationMoment>()
+                        );
+
+                        return (shapesProvider, metadataProvider);
+                    }),
+                    ("Torque From Friction 3", async () =>
+                    {
+                        var simulator = new FrictionAndTorqueSimulator(
+                            new SpecificMassEllipse(new Polynomial(1), 1), 
+                            12,
+                            8,
+                            1);
+
+                        var simulation = await simulator.GenerateSimulationAsync(0, 200);
+
+                        var simulationRunner =
+                            new SimulationRunner<AngularMomentumSimulationMoment>(simulation, runtime);
+
+                        var shapesProvider = ShapesProvider.CreateInstance(
+                            simulationRunner,
+                            new AngularMomentumDisplayAdapter(_screenParams, true, true)
+                        );
+                        var metadataProvider = MetadataProvider.CreateInstance(
+                            simulationRunner,
+                            new JsonSerializerMetadataProvider<AngularMomentumSimulationMoment>()
+                        );
+
+                        return (shapesProvider, metadataProvider);
+                    }),
                     ("Torque", async () =>
                     {
                         var simulator = new TorqueSimulator(new SpecificMassEllipse(new Polynomial(1), 3), 0, -4);
@@ -104,30 +176,6 @@ namespace PhysicsPlayground.Display
                         var shapesProvider = ShapesProvider.CreateInstance(
                             simulationRunner,
                             new AngularMomentumDisplayAdapter(_screenParams, false, false)
-                        );
-                        var metadataProvider = MetadataProvider.CreateInstance(
-                            simulationRunner,
-                            new JsonSerializerMetadataProvider<AngularMomentumSimulationMoment>()
-                        );
-
-                        return (shapesProvider, metadataProvider);
-                    }),
-                    ("Torque From Friction", async () =>
-                    {
-                        var simulator = new FrictionAndTorqueSimulator(
-                            new SpecificMassEllipse(new Polynomial(1), 1), 
-                            0,
-                            -20,
-                            1);
-
-                        var simulation = await simulator.GenerateSimulationAsync(0, 200);
-
-                        var simulationRunner =
-                            new SimulationRunner<AngularMomentumSimulationMoment>(simulation, runtime);
-
-                        var shapesProvider = ShapesProvider.CreateInstance(
-                            simulationRunner,
-                            new AngularMomentumDisplayAdapter(_screenParams, true, true)
                         );
                         var metadataProvider = MetadataProvider.CreateInstance(
                             simulationRunner,

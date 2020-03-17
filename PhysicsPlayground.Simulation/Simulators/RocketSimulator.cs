@@ -9,15 +9,15 @@ namespace PhysicsPlayground.Simulation.Simulators
         private readonly double _baseMass;
         private readonly double _propellantMass;
         private readonly double _massLossRate;
-        private readonly double _exhaustV;
+        private readonly double _effectiveExhaustVelocity;
         private readonly double _v0;
 
-        public RocketSimulator(double baseMass, double propellantMass, double massLossRate, double exhaustV, double v0)
+        public RocketSimulator(double baseMass, double propellantMass, double massLossRate, double effectiveExhaustVelocity, double v0)
         {
             _baseMass = baseMass;
             _propellantMass = propellantMass;
             _massLossRate = massLossRate;
-            _exhaustV = exhaustV;
+            _effectiveExhaustVelocity = effectiveExhaustVelocity;
             _v0 = v0;
         }
 
@@ -48,13 +48,13 @@ namespace PhysicsPlayground.Simulation.Simulators
 
         private double RocketAEquation(double t, double t0)
         {
-            return ((-_massLossRate * _exhaustV) / (_baseMass + _propellantMass)) /
+            return ((-_massLossRate * _effectiveExhaustVelocity) / (_baseMass + _propellantMass)) /
                    ((1 - _massLossRate * (t - t0)) / (_baseMass + _propellantMass));
         }
 
         private double RocketVEquation(double t, double t0)
         {
-            return (_v0 + _exhaustV * System.Math.Log(
+            return (_v0 + _effectiveExhaustVelocity * System.Math.Log(
                         (_baseMass + _propellantMass) /
                         (_baseMass + _propellantMass - (_massLossRate * (t - t0)))
                     ));
@@ -64,7 +64,7 @@ namespace PhysicsPlayground.Simulation.Simulators
         {
             var m0 = _baseMass + _propellantMass;
             var alpha = _massLossRate;
-            return _exhaustV * (((t - t0) - (m0 / alpha)) * System.Math.Log(m0 / (m0 - alpha * (t - t0))) + (t - t0)) +_v0 * (t - t0);
+            return _effectiveExhaustVelocity * (((t - t0) - (m0 / alpha)) * System.Math.Log(m0 / (m0 - alpha * (t - t0))) + (t - t0)) +_v0 * (t - t0);
         }
     }
 
