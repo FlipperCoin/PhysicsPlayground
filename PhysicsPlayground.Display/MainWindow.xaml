@@ -63,7 +63,7 @@
                 </Grid>
                 <GridSplitter ResizeDirection="Rows" Height="3" Grid.Row="1" HorizontalAlignment="Stretch"/>
                 <Grid Grid.Row="2">
-                    <TextBox Name="metadataText" IsReadOnly="True"></TextBox>
+                    <TextBox Name="metadataText" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"></TextBox>
                 </Grid>
             </Grid>
         </Grid>

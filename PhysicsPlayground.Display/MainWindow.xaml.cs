@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -114,7 +113,7 @@ namespace PhysicsPlayground.Display
                         );
                         var metadataProvider = MetadataProvider.CreateInstance(
                             simulationRunner,
-                            new JsonSerializerMetadataProvider<AngularMomentumSimulationMoment>()
+                            new JsonSerializerMetadataAdapter<AngularMomentumSimulationMoment>()
                         );
 
                         return (shapesProvider, metadataProvider);
@@ -138,7 +137,7 @@ namespace PhysicsPlayground.Display
                         );
                         var metadataProvider = MetadataProvider.CreateInstance(
                             simulationRunner,
-                            new JsonSerializerMetadataProvider<AngularMomentumSimulationMoment>()
+                            new JsonSerializerMetadataAdapter<AngularMomentumSimulationMoment>()
                         );
 
                         return (shapesProvider, metadataProvider);
@@ -162,7 +161,7 @@ namespace PhysicsPlayground.Display
                         );
                         var metadataProvider = MetadataProvider.CreateInstance(
                             simulationRunner,
-                            new JsonSerializerMetadataProvider<AngularMomentumSimulationMoment>()
+                            new JsonSerializerMetadataAdapter<AngularMomentumSimulationMoment>()
                         );
 
                         return (shapesProvider, metadataProvider);
@@ -182,7 +181,7 @@ namespace PhysicsPlayground.Display
                         );
                         var metadataProvider = MetadataProvider.CreateInstance(
                             simulationRunner,
-                            new JsonSerializerMetadataProvider<AngularMomentumSimulationMoment>()
+                            new JsonSerializerMetadataAdapter<AngularMomentumSimulationMoment>()
                         );
 
                         return (shapesProvider, metadataProvider);
@@ -235,7 +234,7 @@ namespace PhysicsPlayground.Display
                         );
                         var metadataProvider = MetadataProvider.CreateInstance(
                             simulationRunner,
-                            new JsonSerializerMetadataProvider<ElasticCollisionMoment>()
+                            new JsonSerializerMetadataAdapter<ElasticCollisionMoment>()
                         );
 
                         return (shapesProvider, metadataProvider);
@@ -278,7 +277,7 @@ namespace PhysicsPlayground.Display
                         );
                         var metadataProvider = MetadataProvider.CreateInstance(
                             simulationRunner,
-                            new JsonSerializerMetadataProvider<ElasticCollisionMoment>()
+                            new JsonSerializerMetadataAdapter<ElasticCollisionMoment>()
                         );
 
                         return (shapesProvider, metadataProvider);
@@ -311,7 +310,7 @@ namespace PhysicsPlayground.Display
                         );
                         var metadataProvider = MetadataProvider.CreateInstance(
                             simulationRunner,
-                            new JsonSerializerMetadataProvider<ElasticCollisionMoment>()
+                            new JsonSerializerMetadataAdapter<ElasticCollisionMoment>()
                         );
 
                         return (shapesProvider, metadataProvider);
@@ -331,7 +330,7 @@ namespace PhysicsPlayground.Display
                         );
                         var metadataProvider = MetadataProvider.CreateInstance(
                             simulationRunner,
-                            new JsonSerializerMetadataProvider<RocketSimulationMoment>()
+                            new JsonSerializerMetadataAdapter<RocketSimulationMoment>()
                         );
 
                         return (shapesProvider, metadataProvider);
@@ -556,14 +555,6 @@ namespace PhysicsPlayground.Display
                 _screenParams.Height = canvas.ActualHeight;
                 _screenParams.Width = canvas.ActualWidth;
             }
-        }
-    }
-
-    internal class JsonSerializerMetadataProvider<T> : IMetadataAdapter<T>
-    {
-        public string GetMetadata(T metadataSource)
-        {
-            return JsonSerializer.Serialize(metadataSource);
         }
     }
 }
